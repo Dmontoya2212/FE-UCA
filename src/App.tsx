@@ -1,8 +1,5 @@
-import './App.css'
-
-function App() {
+const App = () => {
   //const [count, setCount] = useState(0)
-
   return (
     <h1>FE UCA CDMYPE</h1>
   )

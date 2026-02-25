@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    /* ==============================
+       COLORES PRIMARIOS
+       ============================== */
+
+    --color-primary-base: rgb(3, 2, 19);              /* Header, sidebar, títulos */
+    --color-primary-action: rgb(30, 41, 59);          /* Botones principales (CTA) */
+    --color-primary-hover: rgb(23, 32, 51);           /* Hover botones primarios */
+    --color-primary-foreground: rgb(255, 255, 255);   /* Texto sobre primarios */
+
+
+    /* ==============================
+       COLORES SECUNDARIOS
+       ============================== */
+
+    --color-secondary-background: rgb(241, 242, 247); /* Cards, tablas */
+    --color-secondary-foreground: rgb(3, 2, 19);      /* Texto sobre secundario */
+
+
+    /* ==============================
+       COLORES NEUTRALES
+       ============================== */
+
+    --color-background-app: rgb(255, 255, 255);       /* Fondo principal */
+    --color-foreground-main: rgb(2, 6, 23);           /* Texto principal */
+
+    --color-muted: rgb(236, 236, 240);                /* Filas alternas, disabled */
+    --color-muted-foreground: rgb(95, 95, 110);       /* Texto secundario */
+
+    --color-accent: rgb(233, 235, 239);               /* Hover suave / highlight */
+    --color-accent-foreground: rgb(3, 2, 19);         /* Texto sobre accent */
+
+
+    /* ==============================
+       COLORES DE ESTADO
+       ============================== */
+
+    --color-success: rgb(34, 197, 94);                /* Factura pagada */
+    --color-success-foreground: rgb(255, 255, 255);
+
+    --color-warning: rgb(250, 204, 21);               /* Factura pendiente */
+    --color-warning-foreground: rgb(3, 2, 19);
+
+    --color-destructive: rgb(212, 24, 61);            /* Eliminar / error */
+    --color-destructive-foreground: rgb(255, 255, 255);
+
+
+    /* ==============================
+       COLORES PARA GRÁFICOS
+       ============================== */
+
+    --color-chart-income: rgb(245, 158, 11);          /* Ingresos */
+    --color-chart-tax: rgb(20, 184, 166);             /* IVA */
+    --color-chart-total: rgb(30, 64, 175);            /* Total facturado */
+    --color-chart-paid: rgb(74, 222, 128);            /* Facturas pagadas */
+    --color-chart-pending: rgb(234, 179, 8);          /* Facturas pendientes */
+
+
+    /* ==============================
+       TOKENS DE UI
+       ============================== */
+
+    --ui-border-radius: 10px;
+    --ui-font-size-base: 16px;
+
+    /* ==============================
+     TIPOGRAFÍAS BASE
+     ============================== */
+
+    --font-heading: 'Inter', sans-serif;         /* Títulos, navegación, botones */
+    --font-body: 'Roboto', sans-serif;           /* Texto general, formularios */
+    --font-mono: 'JetBrains Mono', monospace;    /* Montos, totales, códigos */
+
+
+    /* ==============================
+       ESCALA TIPOGRÁFICA
+       ============================== */
+
+    --font-size-xs: 12px;    /* Notas, placeholders */
+    --font-size-sm: 14px;    /* Labels, tablas */
+    --font-size-base: 16px;  /* Texto general */
+    --font-size-md: 18px;    /* Subtítulos */
+    --font-size-lg: 20px;    /* Títulos de sección */
+    --font-size-xl: 24px;    /* Títulos de módulo */
+    --font-size-2xl: 32px;   /* Títulos principales */
+
+
+    /* ==============================
+       PESOS TIPOGRÁFICOS
+       ============================== */
+
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+
+    /* ==============================
+       ALTURA DE LÍNEA
+       ============================== */
+
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.7;
+}
