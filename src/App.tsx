@@ -1,8 +1,14 @@
-const App = () => {
-  //const [count, setCount] = useState(0)
+import Header from "./components/Header/Header";
+
+function App() {
   return (
-    <h1>FE UCA CDMYPE</h1>
-  )
+      <>
+        <Header
+            title="Sistema de Facturación Electrónica"
+            subtitle="Gestiona tus facturas de forma simple y profesional"
+        />
+      </>
+  );
 }
 
-export default App
+export default App;
