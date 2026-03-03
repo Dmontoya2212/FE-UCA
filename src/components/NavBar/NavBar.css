@@ -36,7 +36,7 @@
 }
 
 .fe-nav__item:hover {
-    background: rgba(255, 255, 255, 0.65);
+    background: rgb(var(--color-background-app) / 0.65);
     color: rgb(var(--color-foreground-main));
 }
 
@@ -45,7 +45,7 @@
     color: rgb(var(--color-foreground-main));
 
     border: 1px solid rgb(var(--color-muted));
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 6px rgb(0 0 0 / 0.06);
 }
 
 .fe-nav__icon {

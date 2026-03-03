@@ -1,15 +1,20 @@
 import "./DashboardIndicator.css";
 import type { ReactNode } from "react";
 
-export type DashboardIndicatorMode = "default" | "info" | "success" | "warning" | "danger";
+export type DashboardIndicatorMode =
+    | "default"
+    | "info"
+    | "success"
+    | "warning"
+    | "danger";
 
-export type DashboardIndicatorProps = {
+export interface DashboardIndicatorProps {
     title: string;
-    value: string;          // monto o cantidad (ej: "€0.00" o "0")
-    subtitle?: string;      // label pequeño abajo (ej: "0 facturas totales")
-    icon?: ReactNode;       // el icono (svg o componente)
-    mode?: DashboardIndicatorMode; // <-- lo que te pidió tu jefe
-};
+    value: string;
+    subtitle?: string;
+    icon?: ReactNode;
+    mode?: DashboardIndicatorMode;
+}
 
 export default function DashboardIndicator({
                                                title,
@@ -23,14 +28,14 @@ export default function DashboardIndicator({
             <div className="di__left">
                 <p className="di__title">{title}</p>
                 <p className="di__value">{value}</p>
-                {subtitle ? <p className="di__subtitle">{subtitle}</p> : null}
+                {subtitle && <p className="di__subtitle">{subtitle}</p>}
             </div>
 
-            {icon ? (
+            {icon && (
                 <div className="di__iconWrap" aria-hidden="true">
                     {icon}
                 </div>
-            ) : null}
+            )}
         </article>
     );
 }
