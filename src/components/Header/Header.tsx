@@ -1,5 +1,5 @@
 // src/components/Header/Header.tsx
-import "./header.css";
+import "./Header.css";
 
 type HeaderProps = {
     title: string;
