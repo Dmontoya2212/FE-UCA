@@ -5,57 +5,53 @@
        COLORES PRIMARIOS
        ============================== */
 
-    --color-primary-base: rgb(3, 2, 19);              /* Header, sidebar, títulos */
-    --color-primary-action: rgb(30, 41, 59);          /* Botones principales (CTA) */
-    --color-primary-hover: rgb(23, 32, 51);           /* Hover botones primarios */
-    --color-primary-foreground: rgb(255, 255, 255);   /* Texto sobre primarios */
-
+    --color-primary-base: 3, 2, 19;
+    --color-primary-action: 30, 41, 59;
+    --color-primary-hover: 23, 32, 51;
+    --color-primary-foreground: 255, 255, 255;
 
     /* ==============================
        COLORES SECUNDARIOS
        ============================== */
 
-    --color-secondary-background: rgb(241, 242, 247); /* Cards, tablas */
-    --color-secondary-foreground: rgb(3, 2, 19);      /* Texto sobre secundario */
-
+    --color-secondary-background: 241, 242, 247;
+    --color-secondary-foreground: 3, 2, 19;
 
     /* ==============================
        COLORES NEUTRALES
        ============================== */
 
-    --color-background-app: rgb(255, 255, 255);       /* Fondo principal */
-    --color-foreground-main: rgb(2, 6, 23);           /* Texto principal */
+    --color-background-app: 255, 255, 255;
+    --color-foreground-main: 2, 6, 23;
 
-    --color-muted: rgb(236, 236, 240);                /* Filas alternas, disabled */
-    --color-muted-foreground: rgb(95, 95, 110);       /* Texto secundario */
+    --color-muted: 236, 236, 240;
+    --color-muted-foreground: 95, 95, 110;
 
-    --color-accent: rgb(233, 235, 239);               /* Hover suave / highlight */
-    --color-accent-foreground: rgb(3, 2, 19);         /* Texto sobre accent */
-
+    --color-accent: 233, 235, 239;
+    --color-accent-foreground: 3, 2, 19;
 
     /* ==============================
        COLORES DE ESTADO
        ============================== */
 
-    --color-success: rgb(34, 197, 94);                /* Factura pagada */
-    --color-success-foreground: rgb(255, 255, 255);
+    --color-success: 34, 197, 94;
+    --color-success-foreground: 255, 255, 255;
 
-    --color-warning: rgb(250, 204, 21);               /* Factura pendiente */
-    --color-warning-foreground: rgb(3, 2, 19);
+    --color-warning: 250, 204, 21;
+    --color-warning-foreground: 3, 2, 19;
 
-    --color-destructive: rgb(212, 24, 61);            /* Eliminar / error */
-    --color-destructive-foreground: rgb(255, 255, 255);
-
+    --color-destructive: 212, 24, 61;
+    --color-destructive-foreground: 255, 255, 255;
 
     /* ==============================
        COLORES PARA GRÁFICOS
        ============================== */
 
-    --color-chart-income: rgb(245, 158, 11);          /* Ingresos */
-    --color-chart-tax: rgb(20, 184, 166);             /* IVA */
-    --color-chart-total: rgb(30, 64, 175);            /* Total facturado */
-    --color-chart-paid: rgb(74, 222, 128);            /* Facturas pagadas */
-    --color-chart-pending: rgb(234, 179, 8);          /* Facturas pendientes */
+    --color-chart-income: 245, 158, 11;
+    --color-chart-tax: 20, 184, 166;
+    --color-chart-total: 30, 64, 175;
+    --color-chart-paid: 74, 222, 128;
+    --color-chart-pending: 234, 179, 8;
 
 
     /* ==============================

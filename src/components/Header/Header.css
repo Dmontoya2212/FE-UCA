@@ -1,7 +1,7 @@
 .app-header {
     width: 100%;
-    background: var(--color-background-app);
-    border-bottom: 1px solid var(--color-muted);
+    background: rgb(var(--color-background-app));
+    border-bottom: 1px solid rgb(var(--color-muted));
 }
 
 .app-header__content {
@@ -15,7 +15,7 @@
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
-    color: var(--color-primary-base);
+    color: rgb(var(--color-primary-base));
 }
 
 .app-header__subtitle {
@@ -23,5 +23,5 @@
     font-family: var(--font-body);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-regular);
-    color: var(--color-muted-foreground);
+    color: rgb(var(--color-muted-foreground));
 }

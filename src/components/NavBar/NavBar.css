@@ -10,8 +10,8 @@
     padding: 6px;
     border-radius: 999px;
 
-    background: var(--color-accent);
-    border: 1px solid var(--color-muted);
+    background: rgb(var(--color-accent));
+    border: 1px solid rgb(var(--color-muted));
 
     font-family: var(--font-heading);
 }
@@ -26,7 +26,7 @@
 
     border: none;
     background: transparent;
-    color: var(--color-muted-foreground);
+    color: rgb(var(--color-muted-foreground));
 
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
@@ -37,14 +37,14 @@
 
 .fe-nav__item:hover {
     background: rgba(255, 255, 255, 0.65);
-    color: var(--color-foreground-main);
+    color: rgb(var(--color-foreground-main));
 }
 
 .fe-nav__item.is-active {
-    background: var(--color-background-app);
-    color: var(--color-foreground-main);
+    background: rgb(var(--color-background-app));
+    color: rgb(var(--color-foreground-main));
 
-    border: 1px solid var(--color-muted);
+    border: 1px solid rgb(var(--color-muted));
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
 }
 
