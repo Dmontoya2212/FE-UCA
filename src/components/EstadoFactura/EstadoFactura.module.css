@@ -1,0 +1,92 @@
+.estadoContainer {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    padding: 1rem;
+    background-color: rgb(var(--color-muted));
+    color: rgb(var(--color-muted-foreground));
+    border: 2px solid rgb(var(--color-muted-foreground));
+    border-radius: 0.5rem;
+    width: 90%;
+}
+
+.infoSection {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.circle {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: rgb(var(--color-muted-foreground));
+}
+
+.infoContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 0.2rem;
+}
+
+.infoTitle {
+    font-family: var(--font-heading), sans-serif;
+    font-size: 1.1rem;
+}
+
+.info {
+    font-family: var(--font-body), sans-serif;
+}
+
+/*.moneySection {*/
+/*}*/
+
+.moneyAmount {
+    font-family: var(--font-mono), sans-serif;
+    font-size: 1.3rem;
+}
+
+.variant_pagadas {
+    background-color: rgba(var(--color-success), 0.3);
+    border-color: rgba(var(--color-success), 0.4);
+    color: color-mix(in oklch, rgba(var(--color-success)) 50%, black);
+}
+
+.circle_pagadas {
+    background-color: rgb(var(--color-success));
+}
+
+.info_pagadas {
+    color: color-mix(in oklch, rgba(var(--color-success)) 70%, black);
+}
+
+.variant_enviadas {
+    background-color: rgba(var(--color-chart-total), 0.3);
+    border-color: rgba(var(--color-chart-total), 0.4);
+    color: color-mix(in oklch, rgba(var(--color-chart-total)) 60%, black);
+}
+
+.circle_enviadas {
+    background-color: rgb(var(--color-chart-total));
+}
+
+.info_enviadas {
+    color: rgba(var(--color-chart-total));
+}
+
+.variant_borradores {
+    background-color: rgba(var(--color-muted-foreground), 0.3);
+    border-color: rgba(var(--color-muted-foreground), 0.4);
+    color: color-mix(in oklch, rgba(var(--color-muted-foreground)) 60%, black);
+}
+
+.circle_borradores {
+    background-color: rgb(var(--color-muted-foreground));
+}
+
+.info_borradores {
+    color: color-mix(in oklch, rgba(var(--color-muted-foreground)) 40%, black);
+}

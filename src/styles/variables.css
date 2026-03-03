@@ -1,17 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-    /* COLORES PRIMARIOS */
+    /* ==============================
+       COLORES PRIMARIOS
+       ============================== */
+
     --color-primary-base: 3, 2, 19;
     --color-primary-action: 30, 41, 59;
     --color-primary-hover: 23, 32, 51;
     --color-primary-foreground: 255, 255, 255;
 
-    /* COLORES SECUNDARIOS */
+
+    /* ==============================
+       COLORES SECUNDARIOS
+       ============================== */
+
     --color-secondary-background: 241, 242, 247;
     --color-secondary-foreground: 3, 2, 19;
 
-    /* COLORES NEUTRALES */
+
+    /* ==============================
+       COLORES NEUTRALES
+       ============================== */
+
     --color-background-app: 255, 255, 255;
     --color-foreground-main: 2, 6, 23;
 
@@ -21,7 +32,11 @@
     --color-accent: 233, 235, 239;
     --color-accent-foreground: 3, 2, 19;
 
-    /* COLORES DE ESTADO */
+
+    /* ==============================
+       COLORES DE ESTADO
+       ============================== */
+
     --color-success: 34, 197, 94;
     --color-success-foreground: 255, 255, 255;
 
@@ -31,7 +46,11 @@
     --color-destructive: 212, 24, 61;
     --color-destructive-foreground: 255, 255, 255;
 
-    /* COLORES PARA GRÁFICOS */
+
+    /* ==============================
+       COLORES PARA GRÁFICOS
+       ============================== */
+
     --color-chart-income: 245, 158, 11;
     --color-chart-tax: 20, 184, 166;
     --color-chart-total: 30, 64, 175;
@@ -50,22 +69,22 @@
      TIPOGRAFÍAS BASE
      ============================== */
 
-    --font-heading: 'Inter', sans-serif;         /* Títulos, navegación, botones */
-    --font-body: 'Roboto', sans-serif;           /* Texto general, formularios */
-    --font-mono: 'JetBrains Mono', monospace;    /* Montos, totales, códigos */
+    --font-heading: 'Inter'; /* Títulos, navegación, botones */
+    --font-body: 'Roboto'; /* Texto general, formularios */
+    --font-mono: 'JetBrains Mono'; /* Montos, totales, códigos */
 
 
     /* ==============================
        ESCALA TIPOGRÁFICA
        ============================== */
 
-    --font-size-xs: 12px;    /* Notas, placeholders */
-    --font-size-sm: 14px;    /* Labels, tablas */
-    --font-size-base: 16px;  /* Texto general */
-    --font-size-md: 18px;    /* Subtítulos */
-    --font-size-lg: 20px;    /* Títulos de sección */
-    --font-size-xl: 24px;    /* Títulos de módulo */
-    --font-size-2xl: 32px;   /* Títulos principales */
+    --font-size-xs: 12px; /* Notas, placeholders */
+    --font-size-sm: 14px; /* Labels, tablas */
+    --font-size-base: 16px; /* Texto general */
+    --font-size-md: 18px; /* Subtítulos */
+    --font-size-lg: 20px; /* Títulos de sección */
+    --font-size-xl: 24px; /* Títulos de módulo */
+    --font-size-2xl: 32px; /* Títulos principales */
 
 
     /* ==============================
