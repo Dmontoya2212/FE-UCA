@@ -1,0 +1,88 @@
+.selectWrapper {
+    position: relative;
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+}
+
+/* Botón que simula el select */
+.customSelect {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px 12px;
+
+    border-radius: var(--ui-border-radius);
+    border: none;
+
+    background: rgb(var(--color-secondary-background));
+    color: rgb(var(--color-secondary-foreground));
+
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+
+    cursor: pointer;
+}
+
+/* Flecha del dropdown */
+.selectIcon {
+    font-size: var(--font-size-sm);
+    color: rgb(var(--color-muted-foreground));
+}
+
+/* Dropdown */
+.dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+
+    width: 100%;
+
+    background: rgb(var(--color-background-app));
+    border-radius: var(--ui-border-radius);
+
+    padding: 6px;
+
+    box-shadow: 0 8px 20px rgba(var(--color-primary-base), 0.08);
+
+    z-index: 100;
+}
+
+/* Opción */
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px 12px;
+
+    border-radius: var(--ui-border-radius);
+
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+
+    color: rgb(var(--color-foreground-main));
+
+    cursor: pointer;
+}
+
+/* Hover opción */
+.option:hover {
+    background: rgb(var(--color-accent));
+    color: rgb(var(--color-accent-foreground));
+}
+
+/* Opción seleccionada */
+.optionSelected {
+    background: rgb(var(--color-muted));
+    color: rgb(var(--color-foreground-main));
+    font-weight: var(--font-weight-medium);
+}
+
+/* Icono de check */
+.optionIcon {
+    font-size: var(--font-size-sm);
+    color: rgb(var(--color-foreground-main));
+}
