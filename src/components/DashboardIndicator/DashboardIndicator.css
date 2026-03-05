@@ -1,0 +1,89 @@
+.di {
+    width: 360px;
+    min-height: 140px;
+    padding: 22px 24px;
+    border-radius: var(--ui-border-radius);
+
+    background: rgb(var(--color-background-app));
+    border: 1px solid rgba(var(--color-foreground-main), 0.10);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    font-family: var(--font-body);
+}
+
+.di__left {
+    display: flex;
+    flex-direction: column;
+}
+
+.di__title {
+    font-size: var(--font-size-sm);
+    color: rgb(var(--color-foreground-main));
+    font-weight: var(--font-weight-medium);
+    margin-bottom: 10px;
+}
+
+.di__value {
+    font-family: var(--font-heading);
+    font-size: 34px;
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-bold);
+    color: rgb(var(--color-foreground-main));
+    margin-bottom: 8px;
+}
+
+.di__subtitle {
+    font-size: var(--font-size-sm);
+    color: rgb(var(--color-muted-foreground));
+}
+
+
+.di__iconWrap {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+
+    display: grid;
+    place-items: center;
+
+    /* default */
+    background: rgba(var(--color-foreground-main), 0.06);
+    color: rgb(var(--color-foreground-main));
+}
+
+.di__iconWrap svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
+   /*MODOS*/
+
+.di--default .di__iconWrap {
+    background: rgba(var(--color-foreground-main), 0.06);
+    color: rgb(var(--color-foreground-main));
+}
+
+.di--info .di__iconWrap {
+    background: rgba(var(--color-chart-total), 0.12);
+    color: rgb(var(--color-chart-total));
+}
+
+.di--success .di__iconWrap {
+    background: rgba(var(--color-success), 0.18);
+    color: rgb(var(--color-success));
+}
+
+.di--warning .di__iconWrap {
+    background: rgba(var(--color-warning), 0.22);
+    color: rgb(var(--color-chart-pending));
+}
+
+.di--danger .di__iconWrap {
+    background: rgba(var(--color-destructive), 0.14);
+    color: rgb(var(--color-destructive));
+}
