@@ -1,0 +1,256 @@
+.dialog {
+    width: 650px;
+    height: 550px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 0.5rem;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.dialog::backdrop {
+    background-color: rgba(var(--color-muted-foreground), 0.9);
+    opacity: 1;
+}
+
+.bodyDialog {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    background-color: rgb(var(--color-background-app));
+}
+
+.headerSection {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+}
+
+.title {
+    color: rgb(var(--color-foreground-main));
+    font-family: var(--font-heading), sans-serif;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.icon {
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: all 250ms;
+}
+
+.iconClose {
+    font-size: 1.5rem;
+    color: rgb(var(--color-muted-foreground));
+}
+
+.iconClose:hover {
+    color: rgb(var(--color-foreground-main));
+    scale: 1.2;
+}
+
+.formSection {
+    flex: 1 0 auto;
+}
+
+.dialogForm {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 100%;
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+.full {
+    grid-column: span 2;
+}
+
+.labelForm {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 0.3rem;
+    color: rgb(var(--color-secondary-foreground));
+    font-family: var(--font-body), sans-serif;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.inputForm {
+    padding: 0.8rem 0.5rem;
+    background-color: rgb(var(--color-secondary-background));
+    border: 1px solid rgb(var(--color-muted));
+    border-radius: 0.5rem;
+    color: rgb(var(--color-foreground-main));
+    font-family: var(--font-body), sans-serif;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+}
+
+.inputForm::placeholder {
+    color: rgb(var(--color-muted-foreground));
+    font-family: var(--font-body), sans-serif;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+}
+
+.inputForm:focus {
+    background-color: rgb(var(--color-background-app));
+    outline: 2px solid rgb(var(--color-chart-total));
+}
+
+.inputWithIcon {
+    position: relative;
+    width: 100%;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-size: var(--font-size-sm);
+    color: rgb(var(--color-muted-foreground));
+}
+
+.inputPrice {
+    padding-left: 32px;
+    width: 100%;
+}
+
+.textareaForm {
+    width: 100%;
+
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+
+    background: rgb(var(--color-secondary-background));
+    color: rgb(var(--color-secondary-foreground));
+
+    border-radius: var(--ui-border-radius);
+    border: none;
+
+    padding: 10px 12px;
+
+    resize: none;
+
+    field-sizing: content;
+
+    min-height: 42px;
+    max-height: 168px;
+
+    overflow-y: auto;
+}
+
+.actionButtonsSection {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    align-content: center;
+    gap: 0.5rem;
+}
+
+.button {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.3rem;
+    font-family: var(--font-heading), sans-serif;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    will-change: contents;
+    transition: all 250ms;
+}
+
+.cancelButton {
+    background-color: rgb(var(--color-accent));
+    color: rgb(var(--color-accent-foreground));
+}
+
+.cancelButton:hover {
+    background-color: rgb(var(--color-muted));
+    cursor: pointer;
+}
+
+.cancelButton:hover .iconReset {
+    animation: icon-animation 750ms linear infinite;
+}
+
+.saveButton {
+    background-color: rgb(var(--color-primary-action));
+    color: rgb(var(--color-primary-foreground));
+}
+
+.saveButton:hover {
+    background-color: rgb(var(--color-primary-hover));
+    cursor: pointer;
+}
+
+.saveButton:hover .iconSave {
+    animation: icon-animation 750ms linear infinite;
+}
+
+.dialog.openDialog {
+    transform-origin: center;
+    animation: openD 300ms ease 1 forwards;
+}
+
+.dialog.closeDialog {
+    transform-origin: center;
+    animation: closeD 300ms ease 1 forwards;
+}
+
+@keyframes icon-animation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes openD {
+    from {
+        top: -100%;
+        opacity: 0;
+    }
+    to {
+        top: 50%;
+        opacity: 1;
+    }
+}
+
+@keyframes closeD {
+    from {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+}
