@@ -1,0 +1,92 @@
+.mc {
+  font-family: var(--font-body);
+  color: var(--color-foreground-main);
+}
+
+/* Tabla medio transparente */
+.mc__tableWrap {
+  background: var(--color-secondary-background);
+  border-radius: var(--ui-border-radius);
+  padding: 14px 16px;
+}
+
+/* Tabla */
+.mc__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Encabezado */
+.mc__table thead th {
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-muted-foreground);
+  padding-bottom: 10px;
+}
+
+/* Celdas */
+.mc__table tbody td {
+  padding: 12px 0;
+  font-size: var(--font-size-sm);
+  border-top: 1px solid var(--color-muted);
+  vertical-align: middle;
+}
+
+/* Primera fila sin borde superior */
+.mc__table tbody tr:first-child td {
+  border-top: none;
+}
+
+/* Nombre mas oscuru */
+.mc__strong {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-secondary-foreground);
+}
+
+/* Texto secundario */
+.mc__muted {
+  color: var(--color-foreground-main);
+}
+
+/* Botones */
+.mc__thActions,
+.mc__actions {
+  text-align: right;
+}
+
+.mc__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+
+.mc__iconBtn {
+  border: none;
+  background: var(--color-background-app);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--ui-border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.mc__iconBtn:hover {
+  background: var(--color-accent);
+  transform: scale(1.05);
+}
+
+/* Botón eliminar */
+.mc__iconBtn--danger {
+  color: var(--color-danger);
+}
+
+/* Mensaje vacío */
+.mc__emptyCell {
+  padding: 14px 0;
+  color: var(--color-muted-foreground);
+}
