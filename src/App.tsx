@@ -1,8 +1,3 @@
-const App = () => {
-  //const [count, setCount] = useState(0)
-  return (
-    <h1>FE UCA CDMYPE</h1>
-  )
+export default function App() {
+  return <></>;
 }
-
-export default App
