@@ -7,6 +7,8 @@ import {
 } from 'react';
 import DropDown from '@components/DropDown/DropDown.tsx';
 import style from '@components/NuevoServicioModal/NuevoServicioModal.module.css';
+// import DropDown from "../DropDown/DropDown";
+// import style from "./NuevoServicioModal.module.css";
 import { FaRegFloppyDisk, FaXmark, FaDollarSign } from 'react-icons/fa6';
 
 type NuevoServicioModalProps = {
