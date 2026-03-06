@@ -1,5 +1,5 @@
 .di {
-    width: 360px;
+    width: 100%;
     min-height: 140px;
     padding: 22px 24px;
     border-radius: var(--ui-border-radius);

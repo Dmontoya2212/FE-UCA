@@ -5,9 +5,8 @@
 }
 
 .app-header__content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px 24px 16px;
+    width: 100%;
+    padding: 20px 32px 16px;
 }
 
 .app-header__title {
@@ -24,4 +23,14 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-regular);
     color: rgb(var(--color-muted-foreground));
+}
+
+@media (max-width: 768px) {
+    .app-header__content {
+        padding: 18px 20px 14px;
+    }
+
+    .app-header__title {
+        font-size: 28px;
+    }
 }

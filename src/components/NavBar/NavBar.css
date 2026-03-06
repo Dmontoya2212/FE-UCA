@@ -1,11 +1,13 @@
 .fe-nav {
     margin-top: 14px;
+    width: 100%;
 }
 
 .fe-nav__pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    flex-wrap: wrap;
 
     padding: 6px;
     border-radius: 999px;
@@ -21,7 +23,7 @@
     align-items: center;
     gap: 8px;
 
-    padding: 10px 14px;
+    padding: 10px 16px;
     border-radius: 999px;
 
     border: none;
@@ -32,7 +34,7 @@
     font-weight: var(--font-weight-medium);
 
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .fe-nav__item:hover {
@@ -51,9 +53,24 @@
 .fe-nav__icon {
     width: 16px;
     height: 16px;
+    font-size: 16px;
     opacity: 0.9;
+    flex-shrink: 0;
 }
 
 .fe-nav__label {
     line-height: var(--line-height-tight);
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .fe-nav__pill {
+        width: 100%;
+        border-radius: 20px;
+    }
+
+    .fe-nav__item {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
 }
