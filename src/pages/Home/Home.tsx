@@ -5,6 +5,8 @@ import DashboardIndicator from "../../components/DashboardIndicator/DashboardInd
 import EstadoFactura from "../../components/EstadoFactura/EstadoFactura";
 import MostrarClientes from "../../components/Clientes/MostrarClientes";
 import ServicioProductoCard from "../../components/Serviciolistar/ServicioProductoCard";
+import Clientes from "../Clientes/Clientes";
+import Facturas from "../Facturas/Facturas";
 
 import { FaArrowTrendUp, FaCircleCheck, FaClock, FaUsers } from "react-icons/fa6";
 import type { Cliente } from "../../models/cliente.model";
@@ -122,6 +124,12 @@ export default function Home() {
                         </div>
                     </div>
                 </section>
+            )}
+            {active === "clientes" && (
+                <Clientes active={active} onChange={setActive} />
+            )}
+            {active === "facturas" && (
+                <Facturas active={active} onChange={setActive} />
             )}
         </main>
     );
