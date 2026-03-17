@@ -1,0 +1,113 @@
+.mf {
+    font-family: var(--font-body);
+}
+
+.mf__tableWrap {
+    background: rgb(var(--color-secondary-background));
+    border-radius: var(--ui-border-radius);
+    padding: 14px 16px;
+}
+
+.mf__table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mf__table thead th {
+    text-align: left;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: rgb(var(--color-muted-foreground));
+    padding-bottom: 10px;
+}
+
+.mf__table tbody td {
+    padding: 12px 0;
+    font-size: var(--font-size-sm);
+    border-top: 1px solid rgb(var(--color-muted));
+    vertical-align: middle;
+}
+
+.mf__table tbody tr:first-child td {
+    border-top: none;
+}
+
+.mf__numero {
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-semibold);
+    color: rgb(var(--color-secondary-foreground));
+}
+
+.mf__total {
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-semibold);
+    color: rgb(var(--color-foreground-main));
+}
+
+.mf__muted {
+    color: rgb(var(--color-muted-foreground));
+}
+
+/* Badge de estado */
+.mf__badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+}
+
+.mf__badge--borrador {
+    background: rgba(var(--color-muted-foreground), 0.15);
+    color: rgb(var(--color-muted-foreground));
+}
+
+.mf__badge--enviada {
+    background: rgba(var(--color-chart-total), 0.15);
+    color: rgb(var(--color-chart-total));
+}
+
+.mf__badge--pagada {
+    background: rgba(var(--color-success), 0.15);
+    color: rgb(var(--color-success));
+}
+
+/* Acciones */
+.mf__thActions,
+.mf__actions {
+    text-align: right;
+}
+
+.mf__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.mf__iconBtn {
+    border: none;
+    background: rgb(var(--color-background-app));
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--ui-border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.mf__iconBtn:hover {
+    background: rgb(var(--color-accent));
+    transform: scale(1.05);
+}
+
+.mf__iconBtn--danger {
+    color: rgb(var(--color-destructive));
+}
+
+.mf__emptyCell {
+    padding: 14px 0;
+    color: rgb(var(--color-muted-foreground));
+}
