@@ -1,11 +1,5 @@
-<<<<<<< HEAD
 import style from '@components/EstadoFactura/EstadoFactura.module.css';
 import { capitalizeText } from '@utils/FormatText.ts';
-=======
-//A mi no me funciona como esta arriba, el de abajo si
-import style from "./EstadoFactura.module.css";
-import { capitalizeText } from "../../utils/FormatText";
->>>>>>> feature/Factura_Page
 
 type EstadoFacturaProps = {
   variant: 'pagadas' | 'enviadas' | 'borradores' | 'default';
