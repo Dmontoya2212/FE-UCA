@@ -27,7 +27,7 @@ export default function Home() {
       <div className="home__indicators">
         <DashboardIndicator
           title="Total Facturado"
-          value="€0.00"
+          value="$0.00"
           subtitle="0 facturas totales"
           icon={<FaArrowTrendUp />}
           mode="info"
@@ -35,7 +35,7 @@ export default function Home() {
 
         <DashboardIndicator
           title="Facturas Pagadas"
-          value="€0.00"
+          value="$0.00"
           subtitle="0 facturas"
           icon={<FaCircleCheck />}
           mode="success"
@@ -43,7 +43,7 @@ export default function Home() {
 
         <DashboardIndicator
           title="Pendiente de Cobro"
-          value="€0.00"
+          value="$0.00"
           subtitle="0 facturas"
           icon={<FaClock />}
           mode="warning"
@@ -102,7 +102,7 @@ export default function Home() {
             descripcion="Servicio de consultoría para infraestructura y desarrollo."
             precio={0}
             iva={21}
-            moneda="€"
+            moneda="$"
           />
         </div>
       </div>
