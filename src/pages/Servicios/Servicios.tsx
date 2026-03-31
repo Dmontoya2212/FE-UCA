@@ -70,14 +70,7 @@ export default function Servicios() {
               creación de facturas
             </p>
 
-            <button
-              type="button"
-              className="servicios__emptyButton"
-              onClick={() => setIsOpenModal(true)}
-            >
-              <FaPlus />
-              <span>Agregar Primer Servicio/Producto</span>
-            </button>
+            
           </div>
         ) : (
           <div className="servicios__grid">

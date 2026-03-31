@@ -1,20 +1,21 @@
-import { useState } from 'react';
-import MostrarFacturas from '../../components/Factura/MostrarFacturas';
-import { FaFileInvoice, FaPlus } from 'react-icons/fa6';
-import type { Factura } from '../../models/factura.model';
-import './Facturas.css';
+import { useState } from "react";
+import MostrarFacturas from "../../components/Factura/MostrarFacturas";
+import NuevaFacturaModal from "../../components/NuevaFacturaModal/NuevaFacturaModal";
+import { FaFileInvoice, FaPlus } from "react-icons/fa6";
+import type { Factura } from "../../models/factura.model";
+import type { Cliente } from "../../models/cliente.model";
+import "./Facturas.css";
 
-// type Props = {
-//     active: "dashboard" | "clientes" | "servicios" | "facturas";
-//     onChange: (key: "dashboard" | "clientes" | "servicios" | "facturas") => void;
-// };
+type NavKey = 'dashboard' | 'clientes' | 'servicios' | 'facturas';
 
 const mockFacturas: Factura[] = [];
+const mockClientes: Cliente[] = [];
 
-export default function Facturas() {
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const facturas = mockFacturas;
-  const hasFacturas = facturas.length > 0;
+export default function Facturas({ }) {
+    const [modalAbierto, setModalAbierto] = useState(false);
+    const facturas = mockFacturas;
+    const clientes = mockClientes;
+    const hasFacturas = facturas.length > 0;
 
   return (
     <section className="facturas__section">
@@ -38,25 +39,33 @@ export default function Facturas() {
         </button>
       </div>
 
-      {!hasFacturas ? (
-        <div className="facturas__emptyPanel">
-          <div className="facturas__emptyIconWrap">
-            <FaFileInvoice className="facturas__emptyIcon" />
-          </div>
-          <h3 className="facturas__emptyTitle">No hay facturas</h3>
-          <p className="facturas__emptyText">
-            Comienza creando tu primera factura electrónica
-          </p>
-        </div>
-      ) : (
-        <div className="facturas__panel">
-          <MostrarFacturas
-            facturas={facturas}
-            onVer={(f) => console.log('ver', f)}
-            onDelete={(f) => console.log('eliminar', f)}
-          />
-        </div>
-      )}
-    </section>
-  );
+            {!hasFacturas ? (
+                <div className="facturas__emptyPanel">
+                    <div className="facturas__emptyIconWrap">
+                        <FaFileInvoice className="facturas__emptyIcon" />
+                    </div>
+                    <h3 className="facturas__emptyTitle">No hay facturas</h3>
+                    <p className="facturas__emptyText">
+                        Comienza creando tu primera factura electrónica
+                    </p>
+                    
+                </div>
+            ) : (
+                <div className="facturas__panel">
+                    <MostrarFacturas
+                        facturas={facturas}
+                        onVer={(f: Factura) => console.log("ver", f)}
+                        onDelete={(f: Factura) => console.log("eliminar", f)}
+                    />
+                </div>
+            )}
+
+            <NuevaFacturaModal
+                isOpen={modalAbierto}
+                setIsOpen={setModalAbierto}
+                clientes={clientes}
+                onGuardar={(cabecera, lineas) => console.log(cabecera, lineas)}
+            />
+        </section>
+    );
 }
