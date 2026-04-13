@@ -2,7 +2,7 @@ import { useState } from 'react';
 import MostrarClientes from '../../components/Clientes/MostrarClientes';
 import NuevoClienteModal from '../../components/NuevoClienteModal/NuevoClienteModal';
 import { FaUsers, FaPlus } from 'react-icons/fa6';
-import type { Cliente } from '../../models/cliente.model';
+import type { Cliente } from '@models/Cliente.ts';
 import './Clientes.css';
 
 // type Props = {

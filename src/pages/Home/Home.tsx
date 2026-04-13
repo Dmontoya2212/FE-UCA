@@ -8,7 +8,7 @@ import {
   FaClock,
   FaUsers,
 } from 'react-icons/fa6';
-import type { Cliente } from '@models/cliente.model';
+import type { Cliente } from '@models/Cliente.ts';
 import './Home.css';
 
 export default function Home() {
