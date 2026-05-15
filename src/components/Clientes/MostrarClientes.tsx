@@ -1,9 +1,9 @@
 import './MostrarClientes.css';
-import type { Cliente } from '@models/Cliente.ts';
+// import type { Cliente } from '@models/Cliente.ts';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
 type Props = {
-  clientes: Cliente[];
+  clientes?: Cliente[] | null;
   onEdit?: (cliente: Cliente) => void;
   onDelete?: (cliente: Cliente) => void;
 };

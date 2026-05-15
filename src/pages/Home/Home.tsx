@@ -8,12 +8,12 @@ import {
   FaClock,
   FaUsers,
 } from 'react-icons/fa6';
-import type { Cliente } from '@models/Cliente.ts';
+//import type { Cliente } from '@models/Cliente.ts';
 import './Home.css';
 
 export default function Home() {
   // Mock temporal mientras se conecta la API
-  const clientesMock: Cliente[] = [];
+  //const clientesMock: Cliente[] = [];
 
   return (
     <section className="home__section">
@@ -88,7 +88,7 @@ export default function Home() {
             <h3 className="home__panelTitle">Clientes Registrados</h3>
           </div>
 
-          <MostrarClientes clientes={clientesMock} />
+          <MostrarClientes clientes={null} />
         </div>
 
         <div className="home__panel">
@@ -101,7 +101,7 @@ export default function Home() {
             nombre="Consultoría IT"
             descripcion="Servicio de consultoría para infraestructura y desarrollo."
             precio={0}
-            iva={21}
+            iva={13}
             moneda="$"
           />
         </div>
