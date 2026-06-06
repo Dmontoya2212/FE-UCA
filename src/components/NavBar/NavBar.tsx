@@ -2,12 +2,13 @@ import { Link } from 'react-router-dom';
 import './NavBar.css';
 import {
   FaTableCellsLarge,
+  FaBuilding,
   FaUsers,
   FaFileInvoice,
   FaBox,
 } from 'react-icons/fa6';
 
-type NavItemKey = 'dashboard' | 'clientes' | 'servicios' | 'facturas';
+type NavItemKey = 'dashboard' | 'empresa' | 'clientes' | 'servicios' | 'facturas';
 
 type NavItem = {
   key: NavItemKey;
@@ -21,6 +22,7 @@ interface NavBarProps {
 
 const ITEMS: NavItem[] = [
   { key: 'dashboard', label: 'Dashboard' },
+  { key: 'empresa', label: 'Empresa' },
   { key: 'clientes', label: 'Clientes' },
   { key: 'servicios', label: 'Servicios' },
   { key: 'facturas', label: 'Facturas' },
@@ -30,6 +32,8 @@ function NavIcon({ name }: { name: NavItemKey }) {
   switch (name) {
     case 'dashboard':
       return <FaTableCellsLarge className="fe-nav__icon" />;
+    case 'empresa':
+      return <FaBuilding className="fe-nav__icon" />;
     case 'clientes':
       return <FaUsers className="fe-nav__icon" />;
     case 'servicios':

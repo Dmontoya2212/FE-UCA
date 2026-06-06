@@ -1,0 +1,243 @@
+.dialog {
+    width: 650px;
+    height: 750px; /* Un poco más alto que cliente para acomodar más campos */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 0.5rem;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.dialog::backdrop {
+    background-color: rgba(var(--color-muted-foreground), 0.9);
+    opacity: 1;
+}
+
+.bodyDialog {
+    display: flex;
+    flex-flow: column nowrap;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(var(--color-background-app));
+}
+
+.headerSection {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(var(--color-foreground-main), 0.08);
+}
+
+.title {
+    color: rgb(var(--color-foreground-main));
+    font-family: var(--font-heading), sans-serif;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.icon {
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: all 250ms;
+}
+
+.iconClose {
+    font-size: 1.5rem;
+    color: rgb(var(--color-muted-foreground));
+}
+
+.iconClose:hover {
+    color: rgb(var(--color-foreground-main));
+    scale: 1.2;
+}
+
+.formSection {
+    flex: 1;
+    overflow-y: auto; /* Permite scroll vertical si los campos exceden la altura */
+    padding: 1.5rem;
+}
+
+.dialogForm {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1.2rem;
+}
+
+.sectionLabel {
+    font-family: var(--font-heading), sans-serif;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: rgb(var(--color-muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+    margin-bottom: -0.5rem;
+    border-bottom: 1px solid rgba(var(--color-foreground-main), 0.08);
+    padding-bottom: 0.5rem;
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+.full {
+    grid-column: span 2;
+}
+
+.labelForm {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 0.4rem;
+    color: rgb(var(--color-secondary-foreground));
+    font-family: var(--font-body), sans-serif;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.required {
+    color: rgb(var(--color-destructive));
+    margin-left: 0.2rem;
+}
+
+.inputForm {
+    padding: 0.8rem 0.8rem;
+    background-color: rgb(var(--color-secondary-background));
+    border: 1px solid rgb(var(--color-muted));
+    border-radius: 0.5rem;
+    color: rgb(var(--color-foreground-main));
+    font-family: var(--font-body), sans-serif;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+    width: 100%;
+}
+
+.inputForm::placeholder {
+    color: rgb(var(--color-muted-foreground));
+}
+
+.inputForm:focus {
+    background-color: rgb(var(--color-background-app));
+    outline: 2px solid rgb(var(--color-chart-total));
+}
+
+/* Contenedor para input de password con botón de visibilidad */
+.passwordWrap {
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+
+.passwordInput {
+    padding-right: 3.5rem; /* Espacio para el botón "Ver" */
+}
+
+.togglePassword {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: rgb(var(--color-muted-foreground));
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    padding: 0.4rem;
+    border-radius: 0.3rem;
+}
+
+.togglePassword:hover {
+    color: rgb(var(--color-foreground-main));
+    background-color: rgba(var(--color-foreground-main), 0.05);
+}
+
+.actionButtonsSection {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(var(--color-foreground-main), 0.08);
+    background-color: rgb(var(--color-background-app));
+}
+
+.button {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 0.4rem;
+    font-family: var(--font-heading), sans-serif;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    transition: all 250ms;
+}
+
+.button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.cancelButton {
+    background-color: rgb(var(--color-accent));
+    color: rgb(var(--color-accent-foreground));
+}
+
+.cancelButton:not(:disabled):hover {
+    background-color: rgb(var(--color-muted));
+    cursor: pointer;
+}
+
+.saveButton {
+    background-color: rgb(var(--color-primary-action));
+    color: rgb(var(--color-primary-foreground));
+}
+
+.saveButton:not(:disabled):hover {
+    background-color: rgb(var(--color-primary-hover));
+    cursor: pointer;
+}
+
+.dialog.openDialog {
+    transform-origin: center;
+    animation: openD 300ms ease 1 forwards;
+}
+
+.dialog.closeDialog {
+    transform-origin: center;
+    animation: closeD 300ms ease 1 forwards;
+}
+
+@keyframes openD {
+    from {
+        top: -100%;
+        opacity: 0;
+    }
+    to {
+        top: 50%;
+        opacity: 1;
+    }
+}
+
+@keyframes closeD {
+    from {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+}

@@ -1,40 +1,66 @@
 import type { MonedaResponse } from '@models/Moneda.ts';
 
 export interface EmpresaRequest {
+  razon_social?: string;
   nombre_legal: string;
   nombre_comercial?: string;
-  nif_cif?: string;
-  email?: string;
-  telefono?: string;
-  direccion?: string;
-  ciudad?: string;
-  codigo_postal?: string;
-}
-
-export interface EmpresaUpdateRequest {
-  nombre_legal?: string;
-  nombre_comercial?: string;
-  nif_cif?: string;
-  email?: string;
-  telefono?: string;
-  direccion?: string;
-  ciudad?: string;
-  codigo_postal?: string;
-}
-
-export interface EmpresaResponse {
-  id: string; // UUID
-  nombre_legal: string;
-  nombre_comercial?: string;
-  nif_cif?: string;
+  nit: string;
+  registro?: string;
+  actividad_economica?: string;
+  sector_empresa?: string;
   email?: string;
   telefono?: string;
   direccion?: string;
   ciudad?: string;
   codigo_postal?: string;
   pais?: string;
+  usuario?: string;
+  password?: string;
+  clave_primaria?: string;
+  token?: string;
+  expire_token?: string;
+}
 
-  created_at: string;
+export interface EmpresaUpdateRequest {
+  razon_social?: string;
+  nombre_legal?: string;
+  nombre_comercial?: string;
+  nit?: string;
+  registro?: string;
+  actividad_economica?: string;
+  sector_empresa?: string;
+  email?: string;
+  telefono?: string;
+  direccion?: string;
+  ciudad?: string;
+  codigo_postal?: string;
+  pais?: string;
+  usuario?: string;
+  password?: string;
+  clave_primaria?: string;
+  token?: string;
+  expire_token?: string;
+}
 
+export interface EmpresaResponse {
+  id: string;
+  razon_social?: string;
+  nombre_legal: string;
+  nombre_comercial?: string;
+  nit: string;
+  registro?: string;
+  actividad_economica?: string;
+  sector_empresa?: string;
+  email?: string;
+  telefono?: string;
+  direccion?: string;
+  ciudad?: string;
+  codigo_postal?: string;
+  pais?: string;
+  usuario?: string;
+  token?: string;
+  expire_token?: string;
   monedas: MonedaResponse[];
+  created_at: string;
+  updated_at?: string;
 }
