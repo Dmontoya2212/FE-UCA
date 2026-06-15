@@ -3,9 +3,9 @@
 ## INSTALACION REACT
 
 Al momento de clonar el repositorio usar:
-npm install
+pnpm install
 
 ## EJECUTAR
 
 Usar:
-npm run dev
+pnpm run dev
