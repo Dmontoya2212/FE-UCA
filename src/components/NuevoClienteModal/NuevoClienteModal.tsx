@@ -7,10 +7,12 @@ import {
 } from 'react';
 import style from '@components/NuevoClienteModal/NuevoClienteModal.module.css';
 import { FaXmark, FaRegFloppyDisk } from 'react-icons/fa6';
+import { useEmpresa } from '@context/EmpresaContext.tsx';
 
 type NuevoClieneteModalProps = {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  onCreated?: () => void;
 };
 
 type NuevoClienteForm = {
@@ -23,18 +25,23 @@ type NuevoClienteForm = {
   telefono: string;
 };
 
-const NuevoClienteModal = ({ isOpen, setIsOpen }: NuevoClieneteModalProps) => {
-  const dialogRef = useRef<HTMLDialogElement | null>(null);
+const API_BASE = 'http://localhost:8080/api/v1/facturacion/cliente';
 
-  const [formData, setFormData] = useState<NuevoClienteForm>({
-    nombre: '',
-    nit: '',
-    email: '',
-    direccion: '',
-    departamento: '',
-    codigoPostal: '',
-    telefono: '',
-  });
+const INITIAL_FORM: NuevoClienteForm = {
+  nombre: '',
+  nit: '',
+  email: '',
+  direccion: '',
+  departamento: '',
+  codigoPostal: '',
+  telefono: '',
+};
+
+const NuevoClienteModal = ({ isOpen, setIsOpen, onCreated }: NuevoClieneteModalProps) => {
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
+  const { selectedEmpresaId } = useEmpresa();
+  const [formData, setFormData] = useState<NuevoClienteForm>(INITIAL_FORM);
+  const [saving, setSaving] = useState(false);
 
   const handleCloseDialog = () => {
     setIsOpen(false);
@@ -42,39 +49,58 @@ const NuevoClienteModal = ({ isOpen, setIsOpen }: NuevoClieneteModalProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleReset = () => {
-    setFormData({
-      nombre: '',
-      nit: '',
-      email: '',
-      direccion: '',
-      departamento: '',
-      codigoPostal: '',
-      telefono: '',
-    });
+    setFormData(INITIAL_FORM);
   };
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    console.log('datos enviados', formData);
+    if (!selectedEmpresaId) {
+      alert("Debes seleccionar una empresa primero.");
+      return;
+    }
 
-    setFormData({
-      nombre: '',
-      nit: '',
-      email: '',
-      direccion: '',
-      departamento: '',
-      codigoPostal: '',
-      telefono: '',
-    });
+    if (!formData.nombre.trim()) return;
+
+    const payload = {
+      empresa_id: selectedEmpresaId,
+      nombre_razon_social: formData.nombre,
+      nif_cif: formData.nit || undefined,
+      email: formData.email || undefined,
+      direccion: formData.direccion || undefined,
+      ciudad: formData.departamento || undefined,
+      codigo_postal: formData.codigoPostal || undefined,
+      telefono: formData.telefono || undefined,
+    };
+
+    try {
+      setSaving(true);
+      const res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error('Error al crear cliente:', err);
+        alert(typeof err.data === 'string' ? err.data : 'Error al crear el cliente');
+        return;
+      }
+
+      setFormData(INITIAL_FORM);
+      setIsOpen(false);
+      onCreated?.();
+    } catch (err) {
+      console.error('Error de red:', err);
+      alert('No se pudo conectar con el servidor');
+    } finally {
+      setSaving(false);
+    }
   };
 
   useEffect(() => {
@@ -224,12 +250,13 @@ const NuevoClienteModal = ({ isOpen, setIsOpen }: NuevoClieneteModalProps) => {
               className={`${style.button} ${style.saveButton}`}
               title={'Enviar datos'}
               onClick={handleSubmit}
+              disabled={saving}
             >
               <FaRegFloppyDisk
                 className={`${style.icon} ${style.iconSave}`}
                 title={`Cerrar`}
               />
-              Guardar
+              {saving ? 'Guardando...' : 'Guardar'}
             </button>
           </section>
         </article>

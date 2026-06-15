@@ -8,13 +8,15 @@ import {
 import DropDown from '../DropDown/DropDown';
 import { FaXmark, FaRegFloppyDisk, FaPlus, FaTrash } from 'react-icons/fa6';
 import style from './NuevaFacturaModal.module.css';
-import type { Cliente } from '@models/Cliente.ts';
+import type { ClienteResponse } from '@models/Cliente.ts';
+import { useEmpresa } from '@context/EmpresaContext.tsx';
 
 type NuevaFacturaModalProps = {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  clientes?: Cliente[];
-  onGuardar?: (cabecera: FacturaCabecera, lineas: FacturaLinea[]) => void;
+  clientes?: ClienteResponse[];
+  servicios?: { id: string; nombre: string; descripcion?: string; precio_sin_iva: number; iva: { porcentaje: number } }[];
+  onCreated?: () => void;
 };
 
 type FacturaCabecera = {
@@ -25,6 +27,7 @@ type FacturaCabecera = {
 };
 
 type FacturaLinea = {
+  itemId: string;
   descripcion: string;
   cantidad: string;
   precioSinIva: string;
@@ -41,25 +44,38 @@ const ivaOptions = [
   { value: '0', label: '0%' },
 ];
 
+const API_BASE = 'http://localhost:8080/api/v1/facturacion/factura';
+
 const lineaVacia = (): FacturaLinea => ({
+  itemId: '',
   descripcion: '',
-  cantidad: '',
+  cantidad: '1',
   precioSinIva: '',
   ivaPorcentaje: '13',
 });
 
+const getTodayLocal = () => {
+  const d = new Date();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${month}-${day}`;
+};
+
 export default function NuevaFacturaModal({
   isOpen,
   setIsOpen,
-  onGuardar,
+  onCreated,
   clientes = [],
+  servicios = [],
 }: NuevaFacturaModalProps) {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
+  const { selectedEmpresaId } = useEmpresa();
+  const [saving, setSaving] = useState(false);
 
   const [cabecera, setCabecera] = useState<FacturaCabecera>({
     numero: '',
     clienteId: '',
-    fechaEmision: '',
+    fechaEmision: getTodayLocal(), // Default today locally
     monedaCodigo: 'USD',
   });
 
@@ -87,6 +103,25 @@ export default function NuevaFacturaModal({
     );
   };
 
+  const handleItemSelect = (index: number, itemId: string) => {
+    const selectedItem = servicios.find(s => s.id === itemId);
+    setLineas(prev => prev.map((l, i) => {
+      if (i === index) {
+        if (!selectedItem) {
+          return { ...l, itemId: '' };
+        }
+        return {
+          ...l,
+          itemId: selectedItem.id,
+          descripcion: selectedItem.nombre || selectedItem.descripcion || '',
+          precioSinIva: String(selectedItem.precio_sin_iva || 0),
+          ivaPorcentaje: selectedItem.iva ? String(selectedItem.iva.porcentaje >= 1 ? selectedItem.iva.porcentaje : selectedItem.iva.porcentaje * 100) : '13'
+        };
+      }
+      return l;
+    }));
+  };
+
   const agregarLinea = () => setLineas((prev) => [...prev, lineaVacia()]);
 
   const eliminarLinea = (index: number) =>
@@ -106,18 +141,73 @@ export default function NuevaFacturaModal({
     setCabecera({
       numero: '',
       clienteId: '',
-      fechaEmision: '',
+      fechaEmision: getTodayLocal(),
       monedaCodigo: 'USD',
     });
     setLineas([lineaVacia()]);
   };
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    onGuardar?.(cabecera, lineas);
-    handleReset();
-    handleClose();
+    if (!selectedEmpresaId) {
+      alert("Selecciona una empresa primero");
+      return;
+    }
+
+    if (!cabecera.numero || !cabecera.fechaEmision) return;
+
+    // Remove empty lines
+    const validLines = lineas.filter(l => l.descripcion.trim() !== '' && l.precioSinIva !== '');
+    if (validLines.length === 0) {
+      alert("Agrega al menos una línea a la factura.");
+      return;
+    }
+
+    const payload = {
+      empresaId: selectedEmpresaId,
+      clienteId: cabecera.clienteId || undefined,
+      numero: cabecera.numero,
+      fechaEmision: cabecera.fechaEmision,
+      moneda_codigo: cabecera.monedaCodigo,
+      lineas: validLines.map(l => ({
+        item_id: l.itemId || undefined,
+        descripcion: l.descripcion,
+        cantidad: parseFloat(l.cantidad) || 1,
+        precio_sin_iva: parseFloat(l.precioSinIva),
+        iva_porcentaje: parseFloat(l.ivaPorcentaje)
+      }))
+    };
+
+    try {
+      setSaving(true);
+      const res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error('Error al crear factura:', err);
+        alert(typeof err.data === 'string' ? err.data : 'Error al crear la factura');
+        return;
+      }
+
+      handleReset();
+      handleClose();
+      onCreated?.();
+    } catch (err) {
+      console.error('Error de red:', err);
+      alert('No se pudo conectar con el servidor');
+    } finally {
+      setSaving(false);
+    }
   };
+
+  const servicioOptions = [
+    { value: '', label: 'Seleccionar (Opcional)' },
+    ...servicios.map(s => ({ value: s.id, label: s.nombre }))
+  ];
 
   return (
     <dialog
@@ -212,18 +302,27 @@ export default function NuevaFacturaModal({
           <div className={style.lineasContainer}>
             {lineas.map((linea, index) => (
               <div key={index} className={style.lineaRow}>
-                <label className={`${style.labelForm} ${style.colDesc}`}>
-                  {index === 0 && <span>Descripción</span>}
-                  <input
-                    className={style.inputForm}
-                    placeholder="Servicio o producto"
-                    type="text"
-                    name="descripcion"
-                    value={linea.descripcion}
-                    onChange={(e) => handleLineaChange(index, e)}
-                    required
-                  />
-                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+                  <label className={`${style.labelForm}`}>
+                    {index === 0 && <span>Servicio/Producto</span>}
+                    <DropDown
+                      options={servicioOptions}
+                      value={linea.itemId}
+                      onChange={(v) => handleItemSelect(index, v)}
+                    />
+                  </label>
+                  <label className={`${style.labelForm}`}>
+                    <input
+                      className={style.inputForm}
+                      placeholder="Descripción personalizada"
+                      type="text"
+                      name="descripcion"
+                      value={linea.descripcion}
+                      onChange={(e) => handleLineaChange(index, e)}
+                      required
+                    />
+                  </label>
+                </div>
 
                 <label className={`${style.labelForm} ${style.colSmall}`}>
                   {index === 0 && <span>Cantidad</span>}
@@ -315,11 +414,13 @@ export default function NuevaFacturaModal({
             type="button"
             className={`${style.button} ${style.saveButton}`}
             onClick={handleSubmit}
+            disabled={saving}
           >
-            <FaRegFloppyDisk className={style.icon} /> Guardar
+            <FaRegFloppyDisk className={style.icon} /> {saving ? 'Guardando...' : 'Guardar'}
           </button>
         </section>
       </article>
     </dialog>
   );
 }
+

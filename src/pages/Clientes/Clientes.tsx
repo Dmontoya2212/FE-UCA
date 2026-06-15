@@ -1,20 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MostrarClientes from '../../components/Clientes/MostrarClientes';
 import NuevoClienteModal from '../../components/NuevoClienteModal/NuevoClienteModal';
 import { FaUsers, FaPlus } from 'react-icons/fa6';
-import type { Cliente } from '@models/Cliente.ts';
+import type { ClienteResponse } from '@models/Cliente.ts';
+import { useEmpresa } from '@context/EmpresaContext.tsx';
 import './Clientes.css';
 
-// type Props = {
-//   active: 'dashboard' | 'clientes' | 'servicios' | 'facturas';
-//   onChange: (key: 'dashboard' | 'clientes' | 'servicios' | 'facturas') => void;
-// };
-
-const mockClientes: Cliente[] = [];
+const API_BASE = 'http://localhost:8080/api/v1/facturacion/cliente';
 
 export default function Clientes() {
+  const { selectedEmpresaId } = useEmpresa();
   const [modalAbierto, setModalAbierto] = useState(false);
-  const clientes = mockClientes;
+  const [clientes, setClientes] = useState<ClienteResponse[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchClientes = async () => {
+    if (!selectedEmpresaId) {
+      setClientes([]);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
+      const json = await res.json();
+      const mapped = (json.data ?? []).map((c: any) => ({
+        id: c.id,
+        empresaId: c.empresa_id,
+        nombreRazonSocial: c.nombre_razon_social,
+        nifCif: c.nif_cif,
+        email: c.email,
+        direccion: c.direccion,
+        ciudad: c.ciudad,
+        codigoPostal: c.codigo_postal,
+        telefono: c.telefono,
+        activo: c.activo
+      }));
+      setClientes(mapped);
+    } catch (err) {
+      console.error('Error al cargar clientes:', err);
+      setClientes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchClientes();
+  }, [selectedEmpresaId]);
+
   const hasClientes = clientes.length > 0;
 
   return (
@@ -36,13 +70,29 @@ export default function Clientes() {
           type="button"
           className="clientes__newButton"
           onClick={() => setModalAbierto(true)}
+          disabled={!selectedEmpresaId}
+          title={!selectedEmpresaId ? "Selecciona una empresa primero" : ""}
         >
           <FaPlus />
           <span>Nuevo Cliente</span>
         </button>
       </div>
 
-      {!hasClientes ? (
+      {!selectedEmpresaId ? (
+        <div className="clientes__emptyPanel">
+          <div className="clientes__emptyIconWrap">
+            <FaUsers className="clientes__emptyIcon" />
+          </div>
+          <h3 className="clientes__emptyTitle">Selecciona una empresa</h3>
+          <p className="clientes__emptyText">
+            Debes seleccionar o crear una empresa en la barra superior para ver sus clientes.
+          </p>
+        </div>
+      ) : loading ? (
+        <div className="clientes__emptyPanel">
+          <p className="clientes__emptyText">Cargando clientes...</p>
+        </div>
+      ) : !hasClientes ? (
         <div className="clientes__emptyPanel">
           <div className="clientes__emptyIconWrap">
             <FaUsers className="clientes__emptyIcon" />
@@ -62,7 +112,11 @@ export default function Clientes() {
         </div>
       )}
 
-      <NuevoClienteModal isOpen={modalAbierto} setIsOpen={setModalAbierto} />
+      <NuevoClienteModal 
+        isOpen={modalAbierto} 
+        setIsOpen={setModalAbierto} 
+        onCreated={fetchClientes}
+      />
     </section>
   );
 }

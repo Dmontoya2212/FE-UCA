@@ -1,16 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '../../components/Header/Header';
 import NavBar from '../../components/NavBar/NavBar';
 import NuevoServicioModal from '../../components/NuevoServicioModal/NuevoServicioModal';
 import ServicioProductoCard from '../../components/Serviciolistar/ServicioProductoCard';
-
+import { useEmpresa } from '@context/EmpresaContext.tsx';
 import { FaBoxOpen, FaPlus } from 'react-icons/fa6';
 import './Servicios.css';
 
-type NavKey = 'dashboard' | 'clientes' | 'servicios' | 'facturas';
+const API_BASE = 'http://localhost:8080/api/v1/facturacion/item';
 
 type ServicioProducto = {
-  id: number;
+  id: string; // UUID from backend
   tipo: string;
   nombre: string;
   descripcion?: string;
@@ -20,13 +20,46 @@ type ServicioProducto = {
 };
 
 export default function Servicios() {
-  const [active, setActive] = useState<NavKey>('servicios');
+  const { selectedEmpresaId } = useEmpresa();
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [servicios, setServicios] = useState<ServicioProducto[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // Mock temporal mientras se conecta la API
-  const serviciosMock: ServicioProducto[] = [];
+  const fetchServicios = async () => {
+    if (!selectedEmpresaId) {
+      setServicios([]);
+      return;
+    }
 
-  const hasItems = serviciosMock.length > 0;
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
+      const json = await res.json();
+      
+      // Mapear los datos que vienen del backend
+      const mapped = (json.data ?? []).map((item: any) => ({
+        id: item.id,
+        tipo: item.categoria || 'SERVICIO',
+        nombre: item.nombre,
+        descripcion: item.descripcion,
+        precio: item.precio_sin_iva || 0,
+        iva: item.iva ? (item.iva.porcentaje >= 1 ? item.iva.porcentaje : item.iva.porcentaje * 100) : 13,
+        moneda: 'USD'
+      }));
+      setServicios(mapped);
+    } catch (err) {
+      console.error('Error al cargar servicios/items:', err);
+      setServicios([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchServicios();
+  }, [selectedEmpresaId]);
+
+  const hasItems = servicios.length > 0;
 
   return (
     <>
@@ -49,13 +82,29 @@ export default function Servicios() {
             type="button"
             className="servicios__newButton"
             onClick={() => setIsOpenModal(true)}
+            disabled={!selectedEmpresaId}
+            title={!selectedEmpresaId ? "Selecciona una empresa primero" : ""}
           >
             <FaPlus />
             <span>Nuevo Servicio/Producto</span>
           </button>
         </div>
 
-        {!hasItems ? (
+        {!selectedEmpresaId ? (
+          <div className="servicios__emptyPanel">
+            <div className="servicios__emptyIconWrap">
+              <FaBoxOpen className="servicios__emptyIcon" />
+            </div>
+            <h3 className="servicios__emptyTitle">Selecciona una empresa</h3>
+            <p className="servicios__emptyText">
+              Debes seleccionar o crear una empresa en la barra superior para ver sus servicios/productos.
+            </p>
+          </div>
+        ) : loading ? (
+          <div className="servicios__emptyPanel">
+            <p className="servicios__emptyText">Cargando servicios y productos...</p>
+          </div>
+        ) : !hasItems ? (
           <div className="servicios__emptyPanel">
             <div className="servicios__emptyIconWrap">
               <FaBoxOpen className="servicios__emptyIcon" />
@@ -69,12 +118,10 @@ export default function Servicios() {
               Agrega los servicios o productos que ofreces para facilitar la
               creación de facturas
             </p>
-
-            
           </div>
         ) : (
           <div className="servicios__grid">
-            {serviciosMock.map((item: ServicioProducto) => (
+            {servicios.map((item: ServicioProducto) => (
               <ServicioProductoCard
                 key={item.id}
                 tipo={item.tipo}
@@ -89,7 +136,11 @@ export default function Servicios() {
         )}
       </section>
 
-      <NuevoServicioModal isOpen={isOpenModal} setIsOpen={setIsOpenModal} />
+      <NuevoServicioModal 
+        isOpen={isOpenModal} 
+        setIsOpen={setIsOpenModal} 
+        onCreated={fetchServicios}
+      />
     </>
   );
 }
