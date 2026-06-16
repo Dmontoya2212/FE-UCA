@@ -28,7 +28,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
                         >
                             {empresas.map((emp) => (
                                 <option key={emp.id} value={emp.id}>
-                                    {emp.razon_social || emp.nombre_legal}
+                                    {emp.razon_social || emp.razonSocial || emp.nombre_legal || emp.nombreLegal || emp.nombre_comercial || emp.nombreComercial || 'Empresa Registrada'}
                                 </option>
                             ))}
                         </select>
