@@ -171,6 +171,8 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
+    user-select: none;
 }
 
 .empresa__card::before {
@@ -197,6 +199,18 @@
     transform: translateY(-6px);
 }
 
+.empresa__card--active {
+    border-color: rgb(var(--accent-color)) !important;
+    background: rgba(var(--accent-color), 0.015);
+    box-shadow: 0 16px 36px rgba(var(--accent-color), 0.12), 
+                0 4px 12px rgba(var(--accent-color), 0.04) !important;
+}
+
+.empresa__card--active::before {
+    height: 6px !important;
+    opacity: 1 !important;
+}
+
 .empresa__cardBadge {
     position: absolute;
     top: 18px;
@@ -213,6 +227,18 @@
     font-size: 11px;
     font-weight: var(--font-weight-semibold);
     transition: background 0.25s, color 0.25s;
+}
+
+.empresa__badgeActive {
+    background: rgb(var(--accent-color));
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(var(--accent-color), 0.3);
 }
 
 .empresa__card:hover .empresa__cardBadge {

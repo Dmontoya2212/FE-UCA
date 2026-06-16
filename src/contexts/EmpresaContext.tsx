@@ -15,8 +15,19 @@ const EmpresaContext = createContext<EmpresaContextType | undefined>(undefined);
 
 export function EmpresaProvider({ children }: { children: ReactNode }) {
   const [empresas, setEmpresas] = useState<EmpresaResponse[]>([]);
-  const [selectedEmpresaId, setSelectedEmpresaId] = useState<string | null>(null);
+  const [selectedEmpresaId, setSelectedEmpresaIdState] = useState<string | null>(() => {
+    return localStorage.getItem('selectedEmpresaId');
+  });
   const [loading, setLoading] = useState(true);
+
+  const setSelectedEmpresaId = (id: string | null) => {
+    setSelectedEmpresaIdState(id);
+    if (id) {
+      localStorage.setItem('selectedEmpresaId', id);
+    } else {
+      localStorage.removeItem('selectedEmpresaId');
+    }
+  };
 
   const refreshEmpresas = async () => {
     try {
@@ -26,8 +37,10 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
       const list = json.data ?? [];
       setEmpresas(list);
 
-      // Select the first company by default if none is selected
-      if (list.length > 0 && !selectedEmpresaId) {
+      // Select default if saved one is invalid or none selected
+      const savedId = localStorage.getItem('selectedEmpresaId');
+      const exists = list.some((emp: EmpresaResponse) => emp.id === savedId);
+      if (list.length > 0 && (!savedId || !exists)) {
         setSelectedEmpresaId(list[0].id);
       } else if (list.length === 0) {
         setSelectedEmpresaId(null);

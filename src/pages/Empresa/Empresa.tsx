@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import NuevaEmpresaModal from '@components/NuevaEmpresaModal/NuevaEmpresaModal';
+import { useEmpresa } from '@context/EmpresaContext.tsx';
 import { 
   FaBuilding, 
   FaPlus, 
@@ -21,6 +22,7 @@ export default function Empresa() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [empresas, setEmpresas] = useState<EmpresaResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const { selectedEmpresaId, setSelectedEmpresaId } = useEmpresa();
 
   const fetchEmpresas = async () => {
     try {
@@ -96,11 +98,23 @@ export default function Empresa() {
         <div className="empresa__grid">
           {empresas.map((emp, index) => {
             const styleIndex = index % 4;
+            const isActive = emp.id === selectedEmpresaId;
             return (
-              <div key={emp.id} className={`empresa__card empresa__card--style-${styleIndex}`}>
+              <div 
+                key={emp.id} 
+                className={`empresa__card empresa__card--style-${styleIndex} ${isActive ? 'empresa__card--active' : ''}`}
+                onClick={() => setSelectedEmpresaId(emp.id)}
+                title="Hacer clic para seleccionar esta empresa"
+              >
                 <div className="empresa__cardBadge">
-                  <FaGlobe className="empresa__badgeIcon" />
-                  <span>{emp.ciudad || emp.pais || 'El Salvador'}</span>
+                  {isActive ? (
+                    <span className="empresa__badgeActive">Activa</span>
+                  ) : (
+                    <>
+                      <FaGlobe className="empresa__badgeIcon" />
+                      <span>{emp.ciudad || emp.pais || 'El Salvador'}</span>
+                    </>
+                  )}
                 </div>
 
                 <div className="empresa__cardHeader">
