@@ -1,56 +1,114 @@
 .mc {
   font-family: var(--font-body);
-  color: var(--color-foreground-main);
+  color: rgb(var(--color-foreground-main));
 }
 
-/* Tabla medio transparente */
+/* Container styling with premium border and shadow */
 .mc__tableWrap {
-  background: var(--color-secondary-background);
-  border-radius: var(--ui-border-radius);
-  padding: 14px 16px;
+  background: rgb(var(--color-background-app));
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(var(--color-foreground-main), 0.08);
+  box-shadow: 0 12px 30px rgba(var(--color-foreground-main), 0.03), 
+              0 1px 3px rgba(var(--color-foreground-main), 0.01);
+  overflow-x: auto;
 }
 
-/* Tabla */
+/* Table utilizing separate border structure for floating rows */
 .mc__table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 8px;
 }
 
-/* Encabezado */
+/* Header Columns */
 .mc__table thead th {
   text-align: left;
   font-family: var(--font-heading);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-muted-foreground);
-  padding-bottom: 10px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: rgb(var(--color-muted-foreground));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 20px 16px;
+  border: none;
 }
 
-/* Celdas */
-.mc__table tbody td {
-  padding: 12px 0;
+/* Dynamic row color definitions corresponding to company palette */
+.mc__row--style-0 {
+  --row-accent-color: 59, 130, 246; /* Blue */
+}
+.mc__row--style-1 {
+  --row-accent-color: 20, 184, 166; /* Teal */
+}
+.mc__row--style-2 {
+  --row-accent-color: 139, 92, 246; /* Purple */
+}
+.mc__row--style-3 {
+  --row-accent-color: 16, 185, 129; /* Emerald */
+}
+
+/* Individual row styling */
+.mc__row {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover effect: Subtle lift and left-shifting transition */
+.mc__row:hover {
+  background: rgba(var(--row-accent-color), 0.02) !important;
+  transform: translateX(4px);
+}
+
+/* Row cells layout */
+.mc__row td {
+  padding: 16px 20px;
   font-size: var(--font-size-sm);
-  border-top: 1px solid var(--color-muted);
+  background: rgba(var(--color-foreground-main), 0.015);
+  border-top: 1px solid rgba(var(--color-foreground-main), 0.04);
+  border-bottom: 1px solid rgba(var(--color-foreground-main), 0.04);
   vertical-align: middle;
+  transition: all 0.25s ease;
 }
 
-/* Primera fila sin borde superior */
-.mc__table tbody tr:first-child td {
-  border-top: none;
+/* Left accent border and rounded corners for floating row effect */
+.mc__row td:first-child {
+  border-left: 4px solid rgb(var(--row-accent-color));
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  padding-left: 24px;
 }
 
-/* Nombre mas oscuru */
+.mc__row td:last-child {
+  border-right: 1px solid rgba(var(--color-foreground-main), 0.04);
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  padding-right: 24px;
+}
+
+.mc__row:hover td {
+  border-color: rgba(var(--row-accent-color), 0.15);
+  background: rgba(var(--row-accent-color), 0.01);
+}
+
+/* Highlight primary text on hover with local accent color */
 .mc__strong {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-secondary-foreground);
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-bold);
+  color: rgb(var(--color-foreground-main));
+  transition: color 0.25s ease;
 }
 
-/* Texto secundario */
+.mc__row:hover .mc__strong {
+  color: rgb(var(--row-accent-color));
+}
+
+/* Muted secondary columns styling */
 .mc__muted {
-  color: var(--color-foreground-main);
+  color: rgb(var(--color-muted-foreground));
+  font-weight: var(--font-weight-medium);
 }
 
-/* Botones */
+/* Actions and buttons column */
 .mc__thActions,
 .mc__actions {
   text-align: right;
@@ -59,34 +117,47 @@
 .mc__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
 }
 
-
+/* Icon Buttons stylings */
 .mc__iconBtn {
-  border: none;
-  background: var(--color-background-app);
+  border: 1px solid rgba(var(--color-foreground-main), 0.08);
+  background: rgb(var(--color-background-app));
+  color: rgb(var(--color-muted-foreground));
   cursor: pointer;
-  padding: 6px;
-  border-radius: var(--ui-border-radius);
-  display: flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(var(--color-foreground-main), 0.01);
 }
 
-.mc__iconBtn:hover {
-  background: var(--color-accent);
-  transform: scale(1.05);
+/* Edit button colors */
+.mc__iconBtn--edit:hover {
+  background: rgba(var(--row-accent-color), 0.08);
+  color: rgb(var(--row-accent-color));
+  border-color: rgba(var(--row-accent-color), 0.24);
+  box-shadow: 0 4px 12px rgba(var(--row-accent-color), 0.15);
 }
 
-/* Botón eliminar */
-.mc__iconBtn--danger {
-  color: var(--color-danger);
+/* Delete button colors */
+.mc__iconBtn--danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: rgb(239, 68, 68);
+  border-color: rgba(239, 68, 68, 0.24);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
 }
 
-/* Mensaje vacío */
+/* Empty message styling */
 .mc__emptyCell {
-  padding: 14px 0;
-  color: var(--color-muted-foreground);
+  padding: 32px 0 !important;
+  text-align: center;
+  color: rgb(var(--color-muted-foreground));
+  background: transparent !important;
+  border: none !important;
 }

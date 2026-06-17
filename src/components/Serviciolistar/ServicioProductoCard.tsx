@@ -8,6 +8,7 @@ type Props = {
   precio: number;
   iva: number;
   moneda?: string;
+  themeIndex?: number;
 
   onEdit?: () => void;
   onDelete?: () => void;
@@ -20,24 +21,25 @@ export default function ServicioProductoCard({
   precio,
   iva,
   moneda = '$',
+  themeIndex = 0,
   onEdit,
   onDelete,
 }: Props) {
   const total = precio * (1 + iva / 100);
 
   return (
-    <div className="spCard">
+    <div className={`spCard spCard--style-${themeIndex}`}>
       <div className="spCard__header">
         <span className="spCard__badge">{tipo}</span>
 
         <div className="spCard__actions">
-          <button onClick={onEdit} className="spCard__icon">
+          <button onClick={onEdit} className="spCard__icon spCard__icon--edit">
             <FaEdit className={'icon_edit'} />
           </button>
 
           <button
             onClick={onDelete}
-            className="spCard__icon spCard__iconDelete"
+            className="spCard__icon spCard__icon--delete"
           >
             <FaTrash className={'icon_delete'} />
           </button>

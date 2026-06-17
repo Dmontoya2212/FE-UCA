@@ -20,7 +20,7 @@ type ServicioProducto = {
 };
 
 export default function Servicios() {
-  const { selectedEmpresaId } = useEmpresa();
+  const { empresas, selectedEmpresaId } = useEmpresa();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [servicios, setServicios] = useState<ServicioProducto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -121,17 +121,22 @@ export default function Servicios() {
           </div>
         ) : (
           <div className="servicios__grid">
-            {servicios.map((item: ServicioProducto) => (
-              <ServicioProductoCard
-                key={item.id}
-                tipo={item.tipo}
-                nombre={item.nombre}
-                precio={item.precio}
-                iva={item.iva}
-                {...(item.descripcion ? { descripcion: item.descripcion } : {})}
-                {...(item.moneda ? { moneda: item.moneda } : {})}
-              />
-            ))}
+            {(() => {
+              const activeIndex = empresas.findIndex(emp => emp.id === selectedEmpresaId);
+              const currentThemeIndex = activeIndex >= 0 ? activeIndex % 4 : 0;
+              return servicios.map((item: ServicioProducto) => (
+                <ServicioProductoCard
+                  key={item.id}
+                  tipo={item.tipo}
+                  nombre={item.nombre}
+                  precio={item.precio}
+                  iva={item.iva}
+                  themeIndex={currentThemeIndex}
+                  {...(item.descripcion ? { descripcion: item.descripcion } : {})}
+                  {...(item.moneda ? { moneda: item.moneda } : {})}
+                />
+              ));
+            })()}
           </div>
         )}
       </section>

@@ -9,7 +9,7 @@ import './Clientes.css';
 const API_BASE = 'http://localhost:8080/api/v1/facturacion/cliente';
 
 export default function Clientes() {
-  const { selectedEmpresaId } = useEmpresa();
+  const { empresas, selectedEmpresaId } = useEmpresa();
   const [modalAbierto, setModalAbierto] = useState(false);
   const [clientes, setClientes] = useState<ClienteResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -106,6 +106,10 @@ export default function Clientes() {
         <div className="clientes__panel">
           <MostrarClientes
             clientes={clientes}
+            themeIndex={(() => {
+              const activeIndex = empresas.findIndex(emp => emp.id === selectedEmpresaId);
+              return activeIndex >= 0 ? activeIndex % 4 : 0;
+            })()}
             onDelete={(c) => console.log('eliminar', c)}
             onEdit={(c) => console.log('editar', c)}
           />

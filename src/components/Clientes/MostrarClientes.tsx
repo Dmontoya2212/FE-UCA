@@ -1,14 +1,15 @@
 import './MostrarClientes.css';
-// import type { Cliente } from '@models/Cliente.ts';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import type { ClienteResponse } from '@models/Cliente.ts';
+import { FaPenToSquare, FaTrashCan } from 'react-icons/fa6';
 
 type Props = {
-  clientes?: Cliente[] | null;
-  onEdit?: (cliente: Cliente) => void;
-  onDelete?: (cliente: Cliente) => void;
+  clientes?: ClienteResponse[] | null;
+  themeIndex?: number;
+  onEdit?: (cliente: ClienteResponse) => void;
+  onDelete?: (cliente: ClienteResponse) => void;
 };
 
-export default function MostrarClientes({ clientes, onEdit, onDelete }: Props) {
+export default function MostrarClientes({ clientes, themeIndex = 0, onEdit, onDelete }: Props) {
   return (
     <section className="mc">
       <div className="mc__tableWrap">
@@ -32,35 +33,37 @@ export default function MostrarClientes({ clientes, onEdit, onDelete }: Props) {
                 </td>
               </tr>
             ) : (
-              clientes.map((c) => (
-                <tr key={c.id}>
-                  <td className="mc__strong">{c.nombreRazonSocial}</td>
-                  <td className="mc__muted">{c.nifCif ?? '—'}</td>
-                  <td className="mc__muted">{c.ciudad ?? '—'}</td>
-                  <td className="mc__muted">{c.email ?? '—'}</td>
-                  <td className="mc__muted">{c.telefono ?? '—'}</td>
+              clientes.map((c) => {
+                return (
+                  <tr key={c.id} className={`mc__row mc__row--style-${themeIndex}`}>
+                    <td className="mc__strong">{c.nombreRazonSocial || c.nombre_razon_social}</td>
+                    <td className="mc__muted">{c.nifCif ?? c.nif_cif ?? '—'}</td>
+                    <td className="mc__muted">{c.ciudad ?? '—'}</td>
+                    <td className="mc__muted">{c.email ?? '—'}</td>
+                    <td className="mc__muted">{c.telefono ?? '—'}</td>
 
-                  <td className="mc__actions">
-                    <button
-                      type="button"
-                      className="mc__iconBtn"
-                      onClick={() => onEdit?.(c)}
-                      title="Editar"
-                    >
-                      <FaEdit size={16} />
-                    </button>
+                    <td className="mc__actions">
+                      <button
+                        type="button"
+                        className="mc__iconBtn mc__iconBtn--edit"
+                        onClick={() => onEdit?.(c)}
+                        title="Editar"
+                      >
+                        <FaPenToSquare size={14} />
+                      </button>
 
-                    <button
-                      type="button"
-                      className="mc__iconBtn mc__iconBtn--danger"
-                      onClick={() => onDelete?.(c)}
-                      title="Eliminar"
-                    >
-                      <FaTrash size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))
+                      <button
+                        type="button"
+                        className="mc__iconBtn mc__iconBtn--danger"
+                        onClick={() => onDelete?.(c)}
+                        title="Eliminar"
+                      >
+                        <FaTrashCan size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
