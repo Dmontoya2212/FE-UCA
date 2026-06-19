@@ -12,7 +12,7 @@ const CLIENTE_API = 'http://localhost:8080/api/v1/facturacion/cliente';
 const ITEM_API = 'http://localhost:8080/api/v1/facturacion/item';
 
 export default function Facturas() {
-  const { selectedEmpresaId } = useEmpresa();
+  const { empresas, selectedEmpresaId } = useEmpresa();
   const [modalAbierto, setModalAbierto] = useState(false);
   const [facturas, setFacturas] = useState<FacturaResponse[]>([]);
   const [clientes, setClientes] = useState<ClienteResponse[]>([]);
@@ -124,6 +124,10 @@ export default function Facturas() {
         <div className="facturas__panel">
           <MostrarFacturas
             facturas={facturas}
+            themeIndex={(() => {
+              const activeIndex = empresas.findIndex(emp => emp.id === selectedEmpresaId);
+              return activeIndex >= 0 ? activeIndex % 4 : 0;
+            })()}
             onVer={(f: FacturaResponse) => console.log('ver', f)}
             onDelete={(f: FacturaResponse) => console.log('eliminar', f)}
           />

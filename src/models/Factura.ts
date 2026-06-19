@@ -33,3 +33,8 @@ export interface FacturaResponse {
   createdAt: string;
   updatedAt?: string;
 }
+
+export interface Factura extends FacturaResponse {
+  clienteNombre?: string;
+  fechaVencimiento?: string;
+}

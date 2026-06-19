@@ -1,14 +1,15 @@
 import './MostrarFacturas.css';
-import { FaEye, FaTrash } from 'react-icons/fa';
+import { FaEye, FaTrashCan } from 'react-icons/fa6';
 import type { Factura } from '@models/Factura.ts';
 
 type Props = {
   facturas: Factura[];
+  themeIndex?: number;
   onVer?: (factura: Factura) => void;
   onDelete?: (factura: Factura) => void;
 };
 
-export default function MostrarFacturas({ facturas, onVer, onDelete }: Props) {
+export default function MostrarFacturas({ facturas, themeIndex = 0, onVer, onDelete }: Props) {
   return (
     <section className="mf">
       <div className="mf__tableWrap">
@@ -34,8 +35,8 @@ export default function MostrarFacturas({ facturas, onVer, onDelete }: Props) {
               </tr>
             ) : (
               facturas.map((f) => (
-                <tr key={f.id}>
-                  <td className="mf__numero">{f.numero}</td>
+                <tr key={f.id} className={`mf__row mf__row--style-${themeIndex}`}>
+                  <td className="mf__numero mf__strong">{f.numero}</td>
                   <td className="mf__muted">{f.clienteNombre ?? '—'}</td>
                   <td className="mf__muted">{f.fechaEmision}</td>
                   <td className="mf__muted">{f.fechaVencimiento ?? '—'}</td>
@@ -52,11 +53,11 @@ export default function MostrarFacturas({ facturas, onVer, onDelete }: Props) {
                   <td className="mf__actions">
                     <button
                       type="button"
-                      className="mf__iconBtn"
+                      className="mf__iconBtn mf__iconBtn--view"
                       onClick={() => onVer?.(f)}
                       title="Ver detalle"
                     >
-                      <FaEye size={16} />
+                      <FaEye size={14} />
                     </button>
                     <button
                       type="button"
@@ -64,7 +65,7 @@ export default function MostrarFacturas({ facturas, onVer, onDelete }: Props) {
                       onClick={() => onDelete?.(f)}
                       title="Eliminar"
                     >
-                      <FaTrash size={16} />
+                      <FaTrashCan size={14} />
                     </button>
                   </td>
                 </tr>
