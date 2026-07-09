@@ -85,3 +85,45 @@
         gap: 16px;
     }
 }
+
+.app-header__right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.app-header__user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 16px;
+    border-left: 1px solid rgba(var(--color-foreground-main), 0.12);
+}
+
+.app-header__username {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: rgb(var(--color-foreground-main));
+}
+
+.app-header__logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 8px;
+    color: rgb(239, 68, 68);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.app-header__logout-btn:hover {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgb(239, 68, 68);
+}
