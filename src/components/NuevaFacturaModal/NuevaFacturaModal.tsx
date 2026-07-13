@@ -1,3 +1,4 @@
+import { authFetch } from '../../utils/auth';
 import {
   type Dispatch,
   type SetStateAction,
@@ -9,6 +10,7 @@ import DropDown from '../DropDown/DropDown';
 import { FaXmark, FaRegFloppyDisk, FaPlus, FaTrash } from 'react-icons/fa6';
 import style from './NuevaFacturaModal.module.css';
 import type { ClienteResponse } from '@models/Cliente.ts';
+import type { FacturaResponse } from '@models/Factura.ts';
 import { useEmpresa } from '@context/EmpresaContext.tsx';
 
 type NuevaFacturaModalProps = {
@@ -17,6 +19,7 @@ type NuevaFacturaModalProps = {
   clientes?: ClienteResponse[];
   servicios?: { id: string; nombre: string; descripcion?: string; precio_sin_iva: number; iva: { porcentaje: number } }[];
   onCreated?: () => void;
+  initialData?: FacturaResponse;
 };
 
 type FacturaCabecera = {
@@ -24,6 +27,7 @@ type FacturaCabecera = {
   clienteId: string;
   fechaEmision: string;
   monedaCodigo: string;
+  tipoDte: string;
 };
 
 type FacturaLinea = {
@@ -42,6 +46,12 @@ const monedaOptions = [
 const ivaOptions = [
   { value: '13', label: '13%' },
   { value: '0', label: '0%' },
+];
+
+const tipoDteOptions = [
+  { value: '01', label: '01 - Factura Comercial (FC)' },
+  { value: '03', label: '03 - Comprobante de Crédito Fiscal (CCF)' },
+  { value: '14', label: '14 - Sujeto Excluido (FSE)' },
 ];
 
 const API_BASE = 'http://localhost:8080/api/v1/facturacion/factura';
@@ -67,6 +77,7 @@ export default function NuevaFacturaModal({
   onCreated,
   clientes = [],
   servicios = [],
+  initialData,
 }: NuevaFacturaModalProps) {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
   const { selectedEmpresaId } = useEmpresa();
@@ -75,16 +86,47 @@ export default function NuevaFacturaModal({
   const [cabecera, setCabecera] = useState<FacturaCabecera>({
     numero: '',
     clienteId: '',
-    fechaEmision: getTodayLocal(), // Default today locally
+    fechaEmision: getTodayLocal(),
     monedaCodigo: 'USD',
+    tipoDte: '01',
   });
 
   const [lineas, setLineas] = useState<FacturaLinea[]>([lineaVacia()]);
 
+  const isEditMode = !!initialData;
+  const isReadOnly = isEditMode && initialData?.estado !== 'BORRADOR';
+
   useEffect(() => {
-    if (isOpen) dialogRef.current?.showModal();
-    else setTimeout(() => dialogRef.current?.close(), 300);
-  }, [isOpen]);
+    if (isOpen) {
+      dialogRef.current?.showModal();
+      if (initialData) {
+        setCabecera({
+          numero: initialData.numero || '',
+          clienteId: initialData.clienteId || '',
+          fechaEmision: initialData.fechaEmision || getTodayLocal(),
+          monedaCodigo: initialData.monedaCodigo || 'USD',
+          tipoDte: initialData.tipoDte || '01',
+        });
+        if (initialData.lineas && initialData.lineas.length > 0) {
+          setLineas(
+            initialData.lineas.map((l: any) => ({
+              itemId: l.itemId || '',
+              descripcion: l.descripcion || '',
+              cantidad: String(l.cantidad || '1'),
+              precioSinIva: String(l.precioSinIva || '0'),
+              ivaPorcentaje: String(l.ivaPorcentaje || '13'),
+            }))
+          );
+        } else {
+          setLineas([lineaVacia()]);
+        }
+      } else {
+        handleReset();
+      }
+    } else {
+      setTimeout(() => dialogRef.current?.close(), 300);
+    }
+  }, [isOpen, initialData]);
 
   const handleClose = () => setIsOpen(false);
 
@@ -136,6 +178,8 @@ export default function NuevaFacturaModal({
   };
 
   const totalFactura = lineas.reduce((acc, l) => acc + calcularTotal(l), 0);
+  const subtotalFactura = lineas.reduce((acc, l) => acc + ((parseFloat(l.cantidad) || 0) * (parseFloat(l.precioSinIva) || 0)), 0);
+  const ivaFactura = totalFactura - subtotalFactura;
 
   const handleReset = () => {
     setCabecera({
@@ -143,6 +187,7 @@ export default function NuevaFacturaModal({
       clienteId: '',
       fechaEmision: getTodayLocal(),
       monedaCodigo: 'USD',
+      tipoDte: '01',
     });
     setLineas([lineaVacia()]);
   };
@@ -154,11 +199,11 @@ export default function NuevaFacturaModal({
       return;
     }
 
-    if (!cabecera.numero || !cabecera.fechaEmision) return;
+    if (!cabecera.fechaEmision) return;
 
     // Remove empty lines
     const validLines = lineas.filter(l => l.descripcion.trim() !== '' && l.precioSinIva !== '');
-    if (validLines.length === 0) {
+    if (validLines.length === 0 && !isEditMode) {
       alert("Agrega al menos una línea a la factura.");
       return;
     }
@@ -169,7 +214,8 @@ export default function NuevaFacturaModal({
       numero: cabecera.numero,
       fechaEmision: cabecera.fechaEmision,
       moneda_codigo: cabecera.monedaCodigo,
-      lineas: validLines.map(l => ({
+      tipo_dte: cabecera.tipoDte,
+      lineas: isEditMode ? undefined : validLines.map(l => ({
         item_id: l.itemId || undefined,
         descripcion: l.descripcion,
         cantidad: parseFloat(l.cantidad) || 1,
@@ -180,16 +226,26 @@ export default function NuevaFacturaModal({
 
     try {
       setSaving(true);
-      const res = await fetch(API_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      
+      let res;
+      if (isEditMode) {
+        res = await authFetch(`${API_BASE}/${initialData.id}?empresaId=${selectedEmpresaId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        res = await authFetch(API_BASE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
 
       if (!res.ok) {
         const err = await res.json();
-        console.error('Error al crear factura:', err);
-        alert(typeof err.data === 'string' ? err.data : 'Error al crear la factura');
+        console.error('Error al guardar factura:', err);
+        alert(typeof err.data === 'string' ? err.data : 'Error al guardar la factura');
         return;
       }
 
@@ -221,7 +277,7 @@ export default function NuevaFacturaModal({
       <article className={style.bodyDialog}>
         {/* HEADER */}
         <section className={style.headerSection}>
-          <h4 className={style.title}>Nueva Factura</h4>
+          <h4 className={style.title}>{isEditMode ? 'Editar Factura' : 'Nueva Factura'} {isReadOnly && '(Sólo Lectura)'}</h4>
           <FaXmark
             className={`${style.icon} ${style.iconClose}`}
             onClick={handleClose}
@@ -235,13 +291,12 @@ export default function NuevaFacturaModal({
             <label className={style.labelForm}>
               Número de factura
               <input
-                className={style.inputForm}
-                placeholder="F-000001"
+                className={`${style.inputForm} ${style.inputReadonly}`}
+                placeholder="Autogenerado al guardar"
                 type="text"
                 name="numero"
-                value={cabecera.numero}
-                onChange={handleCabeceraChange}
-                required
+                value={isEditMode ? cabecera.numero : 'Autogenerado al guardar'}
+                readOnly
               />
             </label>
 
@@ -254,6 +309,7 @@ export default function NuevaFacturaModal({
                 value={cabecera.fechaEmision}
                 onChange={handleCabeceraChange}
                 required
+                disabled={isReadOnly}
               />
             </label>
 
@@ -269,9 +325,16 @@ export default function NuevaFacturaModal({
                 ]}
                 value={cabecera.clienteId}
                 placeholder="Selecciona un cliente"
-                onChange={(v) =>
-                  setCabecera((prev) => ({ ...prev, clienteId: v }))
-                }
+                onChange={(v) => { if (!isReadOnly) setCabecera((prev) => ({ ...prev, clienteId: v })); }}
+              />
+            </label>
+
+            <label className={style.labelForm}>
+              Tipo de DTE
+              <DropDown
+                options={tipoDteOptions}
+                value={cabecera.tipoDte}
+                onChange={(v) => { if (!isReadOnly) setCabecera((prev) => ({ ...prev, tipoDte: v })); }}
               />
             </label>
 
@@ -280,23 +343,48 @@ export default function NuevaFacturaModal({
               <DropDown
                 options={monedaOptions}
                 value={cabecera.monedaCodigo}
-                onChange={(v) =>
-                  setCabecera((prev) => ({ ...prev, monedaCodigo: v }))
-                }
+                onChange={(v) => { if (!isReadOnly) setCabecera((prev) => ({ ...prev, monedaCodigo: v })); }}
               />
             </label>
           </div>
 
+          {/* HACIENDA INFO (Only if present) */}
+          {initialData?.codigoGeneracion && (
+            <div className={style.haciendaPanel}>
+              <p className={style.groupLabel}>Información de Hacienda</p>
+              <div className={style.haciendaGrid}>
+                <div className={style.haciendaItem}>
+                  <span className={style.haciendaLabel}>Código Generación</span>
+                  <span className={style.haciendaValue}>{initialData.codigoGeneracion}</span>
+                </div>
+                {initialData.numeroControl && (
+                  <div className={style.haciendaItem}>
+                    <span className={style.haciendaLabel}>Número Control</span>
+                    <span className={style.haciendaValue}>{initialData.numeroControl}</span>
+                  </div>
+                )}
+                {initialData.selloRecibido && (
+                  <div className={style.haciendaItem}>
+                    <span className={style.haciendaLabel}>Sello Recepción</span>
+                    <span className={style.haciendaValue}>{initialData.selloRecibido}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* LÍNEAS */}
           <div className={style.lineasHeader}>
-            <p className={style.groupLabel}>Líneas de detalle</p>
-            <button
-              type="button"
-              className={style.addLineaBtn}
-              onClick={agregarLinea}
-            >
-              <FaPlus /> Agregar línea
-            </button>
+            <p className={style.groupLabel}>Líneas de detalle {isEditMode && '(No editables)'}</p>
+            {!isEditMode && (
+              <button
+                type="button"
+                className={style.addLineaBtn}
+                onClick={agregarLinea}
+              >
+                <FaPlus /> Agregar línea
+              </button>
+            )}
           </div>
 
           <div className={style.lineasContainer}>
@@ -308,7 +396,7 @@ export default function NuevaFacturaModal({
                     <DropDown
                       options={servicioOptions}
                       value={linea.itemId}
-                      onChange={(v) => handleItemSelect(index, v)}
+                      onChange={(v) => { if (!isEditMode) handleItemSelect(index, v); }}
                     />
                   </label>
                   <label className={`${style.labelForm}`}>
@@ -320,6 +408,7 @@ export default function NuevaFacturaModal({
                       value={linea.descripcion}
                       onChange={(e) => handleLineaChange(index, e)}
                       required
+                      disabled={isEditMode}
                     />
                   </label>
                 </div>
@@ -334,6 +423,7 @@ export default function NuevaFacturaModal({
                     value={linea.cantidad}
                     onChange={(e) => handleLineaChange(index, e)}
                     required
+                    disabled={isEditMode}
                   />
                 </label>
 
@@ -347,6 +437,7 @@ export default function NuevaFacturaModal({
                     value={linea.precioSinIva}
                     onChange={(e) => handleLineaChange(index, e)}
                     required
+                    disabled={isEditMode}
                   />
                 </label>
 
@@ -355,13 +446,15 @@ export default function NuevaFacturaModal({
                   <DropDown
                     options={ivaOptions}
                     value={linea.ivaPorcentaje}
-                    onChange={(v) =>
-                      setLineas((prev) =>
-                        prev.map((l, i) =>
-                          i === index ? { ...l, ivaPorcentaje: v } : l,
-                        ),
-                      )
-                    }
+                    onChange={(v) => {
+                      if (!isEditMode) {
+                        setLineas((prev) =>
+                          prev.map((l, i) =>
+                            i === index ? { ...l, ivaPorcentaje: v } : l,
+                          ),
+                        )
+                      }
+                    }}
                   />
                 </label>
 
@@ -378,23 +471,35 @@ export default function NuevaFacturaModal({
                   {index === 0 && (
                     <span className={style.colActionLabel}>&nbsp;</span>
                   )}
-                  <button
-                    type="button"
-                    className={style.deleteLineaBtn}
-                    onClick={() => eliminarLinea(index)}
-                    disabled={lineas.length === 1}
-                  >
-                    <FaTrash />
-                  </button>
+                  {!isEditMode && (
+                    <button
+                      type="button"
+                      className={style.deleteLineaBtn}
+                      onClick={() => eliminarLinea(index)}
+                      disabled={lineas.length === 1}
+                    >
+                      <FaTrash />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
           {/* TOTAL */}
-          <div className={style.totalRow}>
-            <span className={style.totalLabel}>Total con IVA</span>
-            <span className={style.totalValue}>${totalFactura.toFixed(2)}</span>
+          <div className={style.totalesPanel}>
+            <div className={style.totalesCol}>
+              <span className={style.totalLabel}>Subtotal</span>
+              <span className={style.totalValueMini}>${subtotalFactura.toFixed(2)}</span>
+            </div>
+            <div className={style.totalesCol}>
+              <span className={style.totalLabel}>IVA</span>
+              <span className={style.totalValueMini}>${ivaFactura.toFixed(2)}</span>
+            </div>
+            <div className={`${style.totalesCol} ${style.totalesMain}`}>
+              <span className={style.totalLabel}>Total con IVA</span>
+              <span className={style.totalValue}>${totalFactura.toFixed(2)}</span>
+            </div>
           </div>
         </section>
 
@@ -410,14 +515,16 @@ export default function NuevaFacturaModal({
           >
             <FaXmark className={style.icon} /> Cancelar
           </button>
-          <button
-            type="button"
-            className={`${style.button} ${style.saveButton}`}
-            onClick={handleSubmit}
-            disabled={saving}
-          >
-            <FaRegFloppyDisk className={style.icon} /> {saving ? 'Guardando...' : 'Guardar'}
-          </button>
+          {!isReadOnly && (
+            <button
+              type="button"
+              className={`${style.button} ${style.saveButton}`}
+              onClick={handleSubmit}
+              disabled={saving}
+            >
+              <FaRegFloppyDisk className={style.icon} /> {saving ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Guardar')}
+            </button>
+          )}
         </section>
       </article>
     </dialog>

@@ -1,3 +1,4 @@
+import { authFetch } from '../../utils/auth';
 import { useState, useEffect } from 'react';
 import MostrarFacturas from '../../components/Factura/MostrarFacturas';
 import NuevaFacturaModal from '../../components/NuevaFacturaModal/NuevaFacturaModal';
@@ -30,12 +31,12 @@ export default function Facturas() {
     try {
       setLoading(true);
       // Cargar facturas
-      const facturasRes = await fetch(`${FACTURA_API}?empresaId=${selectedEmpresaId}`);
+      const facturasRes = await authFetch(`${FACTURA_API}?empresaId=${selectedEmpresaId}`);
       const facturasJson = await facturasRes.json();
       setFacturas(facturasJson.data ?? []);
 
       // Cargar clientes para el modal
-      const clientesRes = await fetch(`${CLIENTE_API}/empresa/${selectedEmpresaId}`);
+      const clientesRes = await authFetch(`${CLIENTE_API}/empresa/${selectedEmpresaId}`);
       const clientesJson = await clientesRes.json();
       // Mapear snake_case a camelCase como en Clientes.tsx
       const mappedClientes = (clientesJson.data ?? []).map((c: any) => ({
@@ -53,7 +54,7 @@ export default function Facturas() {
       setClientes(mappedClientes);
 
       // Cargar items (servicios/productos)
-      const itemsRes = await fetch(`${ITEM_API}/empresa/${selectedEmpresaId}`);
+      const itemsRes = await authFetch(`${ITEM_API}/empresa/${selectedEmpresaId}`);
       const itemsJson = await itemsRes.json();
       setServicios(itemsJson.data ?? []);
     } catch (err) {
@@ -72,6 +73,30 @@ export default function Facturas() {
 
   const hasFacturas = facturas.length > 0;
 
+  const [facturaToEdit, setFacturaToEdit] = useState<FacturaResponse | undefined>();
+
+  const handleDelete = async (f: FacturaResponse) => {
+    if (!window.confirm(`¿Estás seguro de que deseas eliminar la factura ${f.numero}?`)) return;
+    try {
+      const res = await authFetch(`${FACTURA_API}/${f.id}?empresaId=${selectedEmpresaId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Error al eliminar');
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo eliminar la factura');
+    }
+  };
+
+  const handleEdit = (f: FacturaResponse) => {
+    setFacturaToEdit(f);
+    setModalAbierto(true);
+  };
+
+  const handleOpenModalNew = () => {
+    setFacturaToEdit(undefined);
+    setModalAbierto(true);
+  };
+
   return (
     <section className="facturas__section">
       <div className="facturas__top">
@@ -87,7 +112,7 @@ export default function Facturas() {
         <button
           type="button"
           className="facturas__newButton"
-          onClick={() => setModalAbierto(true)}
+          onClick={handleOpenModalNew}
           disabled={!selectedEmpresaId}
           title={!selectedEmpresaId ? "Selecciona una empresa primero" : ""}
         >
@@ -128,8 +153,8 @@ export default function Facturas() {
               const activeIndex = empresas.findIndex(emp => emp.id === selectedEmpresaId);
               return activeIndex >= 0 ? activeIndex % 4 : 0;
             })()}
-            onVer={(f: FacturaResponse) => console.log('ver', f)}
-            onDelete={(f: FacturaResponse) => console.log('eliminar', f)}
+            onVer={handleEdit}
+            onDelete={handleDelete}
           />
         </div>
       )}
@@ -140,6 +165,7 @@ export default function Facturas() {
         clientes={clientes}
         servicios={servicios}
         onCreated={fetchData}
+        initialData={facturaToEdit}
       />
     </section>
   );

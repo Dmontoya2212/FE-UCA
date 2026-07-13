@@ -1,3 +1,4 @@
+import { authFetch } from '../../utils/auth';
 import {
   type Dispatch,
   type SetStateAction,
@@ -53,13 +54,13 @@ const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModal
     if (selectedEmpresaId) {
       const loadIvas = async () => {
         try {
-          let res = await fetch(`${IVA_API}/${selectedEmpresaId}`);
+          let res = await authFetch(`${IVA_API}/${selectedEmpresaId}`);
           let j = await res.json();
           let list = j.data ?? [];
 
           // Si la empresa no tiene IVAs configurados, "quemamos" o creamos el 13% por defecto automáticamente.
           if (list.length === 0) {
-            await fetch('http://localhost:8080/api/v1/facturacion/iva', {
+            await authFetch('http://localhost:8080/api/v1/facturacion/iva', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -69,7 +70,7 @@ const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModal
               })
             });
             // Recargar la lista después de crearlo
-            res = await fetch(`${IVA_API}/${selectedEmpresaId}`);
+            res = await authFetch(`${IVA_API}/${selectedEmpresaId}`);
             j = await res.json();
             list = j.data ?? [];
           }
@@ -140,7 +141,7 @@ const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModal
 
     try {
       setSaving(true);
-      const res = await fetch(API_BASE, {
+      const res = await authFetch(API_BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

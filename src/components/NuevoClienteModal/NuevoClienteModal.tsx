@@ -1,3 +1,4 @@
+import { authFetch } from '../../utils/auth';
 import {
   type Dispatch,
   type SetStateAction,
@@ -79,7 +80,7 @@ const NuevoClienteModal = ({ isOpen, setIsOpen, onCreated }: NuevoClieneteModalP
 
     try {
       setSaving(true);
-      const res = await fetch(API_BASE, {
+      const res = await authFetch(API_BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

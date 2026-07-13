@@ -1,3 +1,4 @@
+import { authFetch } from '../../utils/auth';
 import { useEffect, useState } from 'react';
 import NuevaEmpresaModal from '@components/NuevaEmpresaModal/NuevaEmpresaModal';
 import { useEmpresa } from '@context/EmpresaContext.tsx';
@@ -27,7 +28,7 @@ export default function Empresa() {
   const fetchEmpresas = async () => {
     try {
       setLoading(true);
-      const res = await fetch(API_BASE);
+      const res = await authFetch(API_BASE);
       const json = await res.json();
       setEmpresas(json.data ?? []);
     } catch (err) {

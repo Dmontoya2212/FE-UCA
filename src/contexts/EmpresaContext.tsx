@@ -1,3 +1,4 @@
+import { authFetch } from '../utils/auth';
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { EmpresaResponse } from '@models/Empresa.ts';
 
@@ -32,7 +33,8 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
   const refreshEmpresas = async () => {
     try {
       setLoading(true);
-      const res = await fetch(EMPRESA_API);
+      const res = await authFetch(EMPRESA_API);
+      
       const json = await res.json();
       const list = json.data ?? [];
       setEmpresas(list);

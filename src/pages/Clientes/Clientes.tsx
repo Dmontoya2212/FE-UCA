@@ -1,3 +1,4 @@
+import { authFetch } from '../../utils/auth';
 import { useState, useEffect } from 'react';
 import MostrarClientes from '../../components/Clientes/MostrarClientes';
 import NuevoClienteModal from '../../components/NuevoClienteModal/NuevoClienteModal';
@@ -22,7 +23,7 @@ export default function Clientes() {
     
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
+      const res = await authFetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
       const json = await res.json();
       const mapped = (json.data ?? []).map((c: any) => ({
         id: c.id,

@@ -1,10 +1,13 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
+type UserRole = 'SUPERADMIN' | 'ADMINISTRADOR' | 'USUARIO';
+
 type UserSession = {
   id: string;
   nombre: string;
   email: string;
   esAdmin: boolean;
+  rol: UserRole;
   token: string;
   empresaId: string;
 };
@@ -15,6 +18,8 @@ type AuthContextType = {
   logout: () => void;
   loading: boolean;
   error: string | null;
+  hasRole: (...roles: UserRole[]) => boolean;
+  isSuperAdmin: () => boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -53,7 +58,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(json.data || 'Credenciales incorrectas');
       }
 
-      const sessionData: UserSession = json.data;
+      const data = json.data;
+      const sessionData: UserSession = {
+        id: data.id,
+        nombre: data.nombre,
+        email: data.email,
+        esAdmin: data.esAdmin,
+        rol: data.rol || (data.esAdmin ? 'ADMINISTRADOR' : 'USUARIO'),
+        token: data.token,
+        empresaId: data.empresaId,
+      };
+
       setUser(sessionData);
       localStorage.setItem('user_session', JSON.stringify(sessionData));
       // Sincronizar selectedEmpresaId con el localStorage para que EmpresaContext lo use
@@ -70,8 +85,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('selectedEmpresaId');
   };
 
+  const hasRole = (...roles: UserRole[]) => {
+    if (!user) return false;
+    return roles.includes(user.rol);
+  };
+
+  const isSuperAdmin = () => hasRole('SUPERADMIN');
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, error }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, error, hasRole, isSuperAdmin }}>
       {children}
     </AuthContext.Provider>
   );
@@ -84,3 +106,5 @@ export function useAuth() {
   }
   return context;
 }
+
+export type { UserRole, UserSession };

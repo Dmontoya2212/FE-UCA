@@ -1,3 +1,4 @@
+import { authFetch } from '../../utils/auth';
 import { useState, useEffect } from 'react';
 import Header from '../../components/Header/Header';
 import NavBar from '../../components/NavBar/NavBar';
@@ -33,7 +34,7 @@ export default function Servicios() {
 
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
+      const res = await authFetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
       const json = await res.json();
       
       // Mapear los datos que vienen del backend
