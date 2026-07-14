@@ -2,8 +2,9 @@ import { authFetch } from '../utils/auth';
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { EmpresaResponse } from '@models/Empresa.ts';
 import { useAuth } from './AuthContext';
+import { apiUrl } from '@/config/api';
 
-const EMPRESA_API = 'http://localhost:8080/api/v1/facturacion/empresa';
+const EMPRESA_API = apiUrl('/api/v1/facturacion/empresa');
 
 type EmpresaContextType = {
   empresas: EmpresaResponse[];

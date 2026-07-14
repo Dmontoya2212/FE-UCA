@@ -5,9 +5,10 @@ import NuevoClienteModal from '../../components/NuevoClienteModal/NuevoClienteMo
 import { FaUsers, FaPlus } from 'react-icons/fa6';
 import type { ClienteResponse } from '@models/Cliente.ts';
 import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { apiUrl } from '@/config/api';
 import './Clientes.css';
 
-const API_BASE = 'http://localhost:8080/api/v1/facturacion/cliente';
+const API_BASE = apiUrl('/api/v1/facturacion/cliente');
 
 export default function Clientes() {
   const { empresas, selectedEmpresaId } = useEmpresa();

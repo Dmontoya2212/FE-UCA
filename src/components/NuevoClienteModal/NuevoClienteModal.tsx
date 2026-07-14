@@ -9,6 +9,7 @@ import {
 import style from '@components/NuevoClienteModal/NuevoClienteModal.module.css';
 import { FaXmark, FaRegFloppyDisk } from 'react-icons/fa6';
 import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { apiUrl } from '@/config/api';
 
 type NuevoClieneteModalProps = {
   isOpen: boolean;
@@ -26,7 +27,7 @@ type NuevoClienteForm = {
   telefono: string;
 };
 
-const API_BASE = 'http://localhost:8080/api/v1/facturacion/cliente';
+const API_BASE = apiUrl('/api/v1/facturacion/cliente');
 
 const INITIAL_FORM: NuevoClienteForm = {
   nombre: '',

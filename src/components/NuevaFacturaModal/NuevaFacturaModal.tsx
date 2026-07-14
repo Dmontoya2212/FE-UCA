@@ -12,6 +12,7 @@ import style from './NuevaFacturaModal.module.css';
 import type { ClienteResponse } from '@models/Cliente.ts';
 import type { FacturaResponse } from '@models/Factura.ts';
 import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { apiUrl } from '@/config/api';
 
 type NuevaFacturaModalProps = {
   isOpen: boolean;
@@ -54,7 +55,7 @@ const tipoDteOptions = [
   { value: '14', label: '14 - Sujeto Excluido (FSE)' },
 ];
 
-const API_BASE = 'http://localhost:8080/api/v1/facturacion/factura';
+const API_BASE = apiUrl('/api/v1/facturacion/factura');
 
 const lineaVacia = (): FacturaLinea => ({
   itemId: '',
@@ -109,7 +110,7 @@ export default function NuevaFacturaModal({
         });
         if (initialData.lineas && initialData.lineas.length > 0) {
           setLineas(
-            initialData.lineas.map((l: any) => ({
+            initialData.lineas.map((l) => ({
               itemId: l.itemId || '',
               descripcion: l.descripcion || '',
               cantidad: String(l.cantidad || '1'),
@@ -320,7 +321,7 @@ export default function NuevaFacturaModal({
                   { value: '', label: 'Sin cliente' },
                   ...clientes.map((c) => ({
                     value: c.id,
-                    label: c.nombreRazonSocial,
+                    label: c.nombreRazonSocial || c.nombre_razon_social || 'Cliente sin nombre',
                   })),
                 ]}
                 value={cabecera.clienteId}

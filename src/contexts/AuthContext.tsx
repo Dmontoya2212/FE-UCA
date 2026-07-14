@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { apiUrl } from '@/config/api';
 
 type UserRole = 'SUPERADMIN' | 'ADMINISTRADOR' | 'USUARIO';
 
@@ -44,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     setError(null);
     try {
-      const res = await fetch('http://localhost:8080/api/v1/auth/login', {
+      const res = await fetch(apiUrl('/api/v1/auth/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

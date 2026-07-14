@@ -37,6 +37,13 @@ export interface FacturaResponse {
   numeroControl?: string;
   selloRecibido?: string;
   fechaRecepcion?: string;
+  lineas?: {
+    itemId?: string;
+    descripcion?: string;
+    cantidad?: number;
+    precioSinIva?: number;
+    ivaPorcentaje?: number;
+  }[];
 
   createdAt: string;
   updatedAt?: string;

@@ -11,13 +11,13 @@ import {
   FaMapPin, 
   FaBriefcase, 
   FaFingerprint, 
-  FaGlobe, 
-  FaArrowRight 
+  FaGlobe
 } from 'react-icons/fa6';
 import type { EmpresaResponse } from '@models/Empresa.ts';
+import { apiUrl } from '@/config/api';
 import './Empresa.css';
 
-const API_BASE = 'http://localhost:8080/api/v1/facturacion/empresa';
+const API_BASE = apiUrl('/api/v1/facturacion/empresa');
 
 export default function Empresa() {
   const [modalAbierto, setModalAbierto] = useState(false);

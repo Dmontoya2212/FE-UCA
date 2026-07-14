@@ -1,14 +1,13 @@
 import { authFetch } from '../../utils/auth';
 import { useState, useEffect } from 'react';
-import Header from '../../components/Header/Header';
-import NavBar from '../../components/NavBar/NavBar';
 import NuevoServicioModal from '../../components/NuevoServicioModal/NuevoServicioModal';
 import ServicioProductoCard from '../../components/Serviciolistar/ServicioProductoCard';
 import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { apiUrl } from '@/config/api';
 import { FaBoxOpen, FaPlus } from 'react-icons/fa6';
 import './Servicios.css';
 
-const API_BASE = 'http://localhost:8080/api/v1/facturacion/item';
+const API_BASE = apiUrl('/api/v1/facturacion/item');
 
 type ServicioProducto = {
   id: string; // UUID from backend
