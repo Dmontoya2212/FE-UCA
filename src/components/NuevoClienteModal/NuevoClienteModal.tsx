@@ -8,7 +8,7 @@ import {
 } from 'react';
 import style from '@components/NuevoClienteModal/NuevoClienteModal.module.css';
 import { FaXmark, FaRegFloppyDisk } from 'react-icons/fa6';
-import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { useEmpresa } from '@context/useEmpresa.ts';
 import { apiUrl } from '@/config/api';
 
 type NuevoClieneteModalProps = {

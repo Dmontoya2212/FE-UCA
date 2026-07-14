@@ -9,7 +9,7 @@ import {
 import DropDown from '@components/DropDown/DropDown.tsx';
 import style from '@components/NuevoServicioModal/NuevoServicioModal.module.css';
 import { FaRegFloppyDisk, FaXmark, FaDollarSign } from 'react-icons/fa6';
-import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { useEmpresa } from '@context/useEmpresa.ts';
 import { apiUrl } from '@/config/api';
 
 type NuevoServicioModalProps = {

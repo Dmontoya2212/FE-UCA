@@ -1,11 +1,11 @@
 import { authFetch } from '../../utils/auth';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import MostrarFacturas from '../../components/Factura/MostrarFacturas';
 import NuevaFacturaModal from '../../components/NuevaFacturaModal/NuevaFacturaModal';
 import { FaFileInvoice, FaPlus } from 'react-icons/fa6';
 import type { FacturaResponse } from '@models/Factura.ts';
 import type { ClienteResponse } from '@models/Cliente.ts';
-import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { useEmpresa } from '@context/useEmpresa.ts';
 import { apiUrl } from '@/config/api';
 import './Facturas.css';
 
@@ -13,15 +13,55 @@ const FACTURA_API = apiUrl('/api/v1/facturacion/factura');
 const CLIENTE_API = apiUrl('/api/v1/facturacion/cliente');
 const ITEM_API = apiUrl('/api/v1/facturacion/item');
 
+type ApiResponse<T> = {
+  data?: T;
+};
+
+type ClienteApiResponse = {
+  id: string;
+  empresa_id?: string;
+  nombre_razon_social?: string;
+  nif_cif?: string;
+  email?: string;
+  direccion?: string;
+  ciudad?: string;
+  codigo_postal?: string;
+  telefono?: string;
+  activo?: boolean;
+};
+
+type ServicioFactura = {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  precio_sin_iva: number;
+  iva: {
+    porcentaje: number;
+  };
+};
+
+const mapCliente = (c: ClienteApiResponse): ClienteResponse => ({
+  id: c.id,
+  ...(c.empresa_id !== undefined ? { empresaId: c.empresa_id } : {}),
+  ...(c.nombre_razon_social !== undefined ? { nombreRazonSocial: c.nombre_razon_social } : {}),
+  ...(c.nif_cif !== undefined ? { nifCif: c.nif_cif } : {}),
+  ...(c.email !== undefined ? { email: c.email } : {}),
+  ...(c.direccion !== undefined ? { direccion: c.direccion } : {}),
+  ...(c.ciudad !== undefined ? { ciudad: c.ciudad } : {}),
+  ...(c.codigo_postal !== undefined ? { codigoPostal: c.codigo_postal } : {}),
+  ...(c.telefono !== undefined ? { telefono: c.telefono } : {}),
+  ...(c.activo !== undefined ? { activo: c.activo } : {}),
+});
+
 export default function Facturas() {
   const { empresas, selectedEmpresaId } = useEmpresa();
   const [modalAbierto, setModalAbierto] = useState(false);
   const [facturas, setFacturas] = useState<FacturaResponse[]>([]);
   const [clientes, setClientes] = useState<ClienteResponse[]>([]);
-  const [servicios, setServicios] = useState<any[]>([]);
+  const [servicios, setServicios] = useState<ServicioFactura[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!selectedEmpresaId) {
       setFacturas([]);
       setClientes([]);
@@ -33,30 +73,19 @@ export default function Facturas() {
       setLoading(true);
       // Cargar facturas
       const facturasRes = await authFetch(`${FACTURA_API}?empresaId=${selectedEmpresaId}`);
-      const facturasJson = await facturasRes.json();
+      const facturasJson = (await facturasRes.json()) as ApiResponse<FacturaResponse[]>;
       setFacturas(facturasJson.data ?? []);
 
       // Cargar clientes para el modal
       const clientesRes = await authFetch(`${CLIENTE_API}/empresa/${selectedEmpresaId}`);
-      const clientesJson = await clientesRes.json();
+      const clientesJson = (await clientesRes.json()) as ApiResponse<ClienteApiResponse[]>;
       // Mapear snake_case a camelCase como en Clientes.tsx
-      const mappedClientes = (clientesJson.data ?? []).map((c: any) => ({
-        id: c.id,
-        empresaId: c.empresa_id,
-        nombreRazonSocial: c.nombre_razon_social,
-        nifCif: c.nif_cif,
-        email: c.email,
-        direccion: c.direccion,
-        ciudad: c.ciudad,
-        codigoPostal: c.codigo_postal,
-        telefono: c.telefono,
-        activo: c.activo
-      }));
+      const mappedClientes = (clientesJson.data ?? []).map(mapCliente);
       setClientes(mappedClientes);
 
       // Cargar items (servicios/productos)
       const itemsRes = await authFetch(`${ITEM_API}/empresa/${selectedEmpresaId}`);
-      const itemsJson = await itemsRes.json();
+      const itemsJson = (await itemsRes.json()) as ApiResponse<ServicioFactura[]>;
       setServicios(itemsJson.data ?? []);
     } catch (err) {
       console.error('Error al cargar datos:', err);
@@ -66,11 +95,13 @@ export default function Facturas() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedEmpresaId]);
 
   useEffect(() => {
-    fetchData();
-  }, [selectedEmpresaId]);
+    queueMicrotask(() => {
+      void fetchData();
+    });
+  }, [fetchData]);
 
   const hasFacturas = facturas.length > 0;
 
@@ -81,7 +112,7 @@ export default function Facturas() {
     try {
       const res = await authFetch(`${FACTURA_API}/${f.id}?empresaId=${selectedEmpresaId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Error al eliminar');
-      fetchData();
+      void fetchData();
     } catch (err) {
       console.error(err);
       alert('No se pudo eliminar la factura');

@@ -1,13 +1,17 @@
 import { authFetch } from '../../utils/auth';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import NuevoUsuarioModal from '../../components/NuevoUsuarioModal/NuevoUsuarioModal';
 import { FaUserShield, FaPlus, FaTrash, FaPen } from 'react-icons/fa6';
 import type { UsuarioResponse } from '@models/Usuario.ts';
-import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { useEmpresa } from '@context/useEmpresa.ts';
 import { apiUrl } from '@/config/api';
 import './Usuarios.css';
 
 const API_BASE = apiUrl('/api/v1/facturacion/usuario');
+
+type ApiResponse<T> = {
+  data?: T;
+};
 
 export default function Usuarios() {
   const { selectedEmpresaId, empresas } = useEmpresa();
@@ -15,7 +19,7 @@ export default function Usuarios() {
   const [usuarios, setUsuarios] = useState<UsuarioResponse[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchUsuarios = async () => {
+  const fetchUsuarios = useCallback(async () => {
     if (!selectedEmpresaId) {
       setUsuarios([]);
       return;
@@ -24,7 +28,7 @@ export default function Usuarios() {
     try {
       setLoading(true);
       const res = await authFetch(`${API_BASE}?empresaId=${selectedEmpresaId}`);
-      const json = await res.json();
+      const json = (await res.json()) as ApiResponse<UsuarioResponse[]>;
       setUsuarios(json.data ?? []);
     } catch (err) {
       console.error('Error al cargar usuarios:', err);
@@ -32,18 +36,20 @@ export default function Usuarios() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedEmpresaId]);
 
   useEffect(() => {
-    fetchUsuarios();
-  }, [selectedEmpresaId]);
+    queueMicrotask(() => {
+      void fetchUsuarios();
+    });
+  }, [fetchUsuarios]);
 
   const handleDelete = async (id: string) => {
     if (!selectedEmpresaId) return;
     if (confirm('¿Seguro que deseas eliminar este usuario?')) {
       try {
         await authFetch(`${API_BASE}/${id}?empresaId=${selectedEmpresaId}`, { method: 'DELETE' });
-        fetchUsuarios();
+        void fetchUsuarios();
       } catch (e) {
         console.error(e);
       }

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/useAuth';
 import { FaEnvelope, FaLock, FaRightToBracket, FaEye, FaEyeSlash } from 'react-icons/fa6';
 import './Login.css';
 
@@ -28,8 +28,12 @@ export default function Login() {
       await login(email, password);
       // Al iniciar sesión exitosamente, redirigir al Home
       navigate('/', { replace: true });
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Credenciales incorrectas. Intenta de nuevo.');
+    } catch (err: unknown) {
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : 'Credenciales incorrectas. Intenta de nuevo.',
+      );
     } finally {
       setLoading(false);
     }

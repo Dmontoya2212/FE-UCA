@@ -7,6 +7,11 @@ import './NuevoUsuarioModal.css';
 
 const API_BASE = apiUrl('/api/v1/facturacion/usuario');
 
+type ErrorResponse = {
+  message?: string;
+  data?: string;
+};
+
 interface NuevoUsuarioModalProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
@@ -58,8 +63,8 @@ export default function NuevoUsuarioModal({ isOpen, setIsOpen, onCreated, empres
       });
 
       if (!res.ok) {
-        const errJson = await res.json();
-        throw new Error(errJson.message || 'Error al crear usuario');
+        const errJson = (await res.json()) as ErrorResponse;
+        throw new Error(errJson.message || errJson.data || 'Error al crear usuario');
       }
 
       setIsOpen(false);
@@ -70,8 +75,8 @@ export default function NuevoUsuarioModal({ isOpen, setIsOpen, onCreated, empres
       setPassword('');
       setRol('USUARIO');
       setEmpresaIds([]);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error al crear usuario');
     } finally {
       setLoading(false);
     }

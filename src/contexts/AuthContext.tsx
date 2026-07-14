@@ -1,46 +1,40 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { apiUrl } from '@/config/api';
+import { AuthContext, type UserRole, type UserSession } from './AuthContextValue';
 
-type UserRole = 'SUPERADMIN' | 'ADMINISTRADOR' | 'USUARIO';
-
-type UserSession = {
+type LoginResponseData = {
   id: string;
   nombre: string;
   email: string;
   esAdmin: boolean;
-  rol: UserRole;
+  rol?: UserRole;
   token: string;
   empresaId: string;
 };
 
-type AuthContextType = {
-  user: UserSession | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  loading: boolean;
-  error: string | null;
-  hasRole: (...roles: UserRole[]) => boolean;
-  isSuperAdmin: () => boolean;
+type ApiResponse<T> = {
+  data?: T;
+  message?: string;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const getSavedSession = (): UserSession | null => {
+  const savedSession = localStorage.getItem('user_session');
+  if (!savedSession) return null;
+
+  try {
+    return JSON.parse(savedSession) as UserSession;
+  } catch {
+    localStorage.removeItem('user_session');
+    return null;
+  }
+};
+
+const getErrorMessage = (err: unknown, fallback: string) =>
+  err instanceof Error ? err.message : fallback;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserSession | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<UserSession | null>(() => getSavedSession());
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const savedSession = localStorage.getItem('user_session');
-    if (savedSession) {
-      try {
-        setUser(JSON.parse(savedSession));
-      } catch (e) {
-        localStorage.removeItem('user_session');
-      }
-    }
-    setLoading(false);
-  }, []);
 
   const login = async (email: string, password: string) => {
     setError(null);
@@ -53,13 +47,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
-      const json = await res.json();
+      const json = (await res.json()) as ApiResponse<LoginResponseData | string>;
 
       if (!res.ok) {
-        throw new Error(json.data || 'Credenciales incorrectas');
+        throw new Error(
+          typeof json.data === 'string'
+            ? json.data
+            : json.message || 'Credenciales incorrectas',
+        );
       }
 
       const data = json.data;
+      if (!data || typeof data === 'string') {
+        throw new Error('Respuesta de inicio de sesion invalida');
+      }
+
       const sessionData: UserSession = {
         id: data.id,
         nombre: data.nombre,
@@ -72,10 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(sessionData);
       localStorage.setItem('user_session', JSON.stringify(sessionData));
-      // Sincronizar selectedEmpresaId con el localStorage para que EmpresaContext lo use
       localStorage.setItem('selectedEmpresaId', sessionData.empresaId);
-    } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión');
+    } catch (err: unknown) {
+      const message = getErrorMessage(err, 'Error al iniciar sesion');
+      setError(message);
       throw err;
     }
   };
@@ -94,18 +96,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isSuperAdmin = () => hasRole('SUPERADMIN');
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, error, hasRole, isSuperAdmin }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, loading: false, error, hasRole, isSuperAdmin }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 }
 
 export type { UserRole, UserSession };

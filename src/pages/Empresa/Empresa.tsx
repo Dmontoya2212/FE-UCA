@@ -1,7 +1,7 @@
 import { authFetch } from '../../utils/auth';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import NuevaEmpresaModal from '@components/NuevaEmpresaModal/NuevaEmpresaModal';
-import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { useEmpresa } from '@context/useEmpresa.ts';
 import { 
   FaBuilding, 
   FaPlus, 
@@ -19,17 +19,21 @@ import './Empresa.css';
 
 const API_BASE = apiUrl('/api/v1/facturacion/empresa');
 
+type ApiResponse<T> = {
+  data?: T;
+};
+
 export default function Empresa() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [empresas, setEmpresas] = useState<EmpresaResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const { selectedEmpresaId, setSelectedEmpresaId } = useEmpresa();
 
-  const fetchEmpresas = async () => {
+  const fetchEmpresas = useCallback(async () => {
     try {
       setLoading(true);
       const res = await authFetch(API_BASE);
-      const json = await res.json();
+      const json = (await res.json()) as ApiResponse<EmpresaResponse[]>;
       setEmpresas(json.data ?? []);
     } catch (err) {
       console.error('Error al cargar empresas:', err);
@@ -37,11 +41,13 @@ export default function Empresa() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchEmpresas();
-  }, []);
+    queueMicrotask(() => {
+      void fetchEmpresas();
+    });
+  }, [fetchEmpresas]);
 
   const hasEmpresas = empresas.length > 0;
 

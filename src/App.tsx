@@ -11,7 +11,8 @@ import Facturas from '@pages/Facturas/Facturas.tsx';
 import Usuarios from '@pages/Usuarios/Usuarios.tsx';
 import Login from './pages/Login/Login.tsx';
 import { EmpresaProvider } from '@context/EmpresaContext.tsx';
-import { AuthProvider, useAuth } from './contexts/AuthContext.tsx';
+import { AuthProvider } from './contexts/AuthContext.tsx';
+import { useAuth } from './contexts/useAuth.ts';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.tsx';
 import '@pages/Home/Home.css';
 

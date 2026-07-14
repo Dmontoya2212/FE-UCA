@@ -1,8 +1,8 @@
 import { authFetch } from '../../utils/auth';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import NuevoServicioModal from '../../components/NuevoServicioModal/NuevoServicioModal';
 import ServicioProductoCard from '../../components/Serviciolistar/ServicioProductoCard';
-import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { useEmpresa } from '@context/useEmpresa.ts';
 import { apiUrl } from '@/config/api';
 import { FaBoxOpen, FaPlus } from 'react-icons/fa6';
 import './Servicios.css';
@@ -19,13 +19,38 @@ type ServicioProducto = {
   moneda?: string;
 };
 
+type ApiResponse<T> = {
+  data?: T;
+};
+
+type ItemApiResponse = {
+  id: string;
+  categoria?: string;
+  nombre: string;
+  descripcion?: string;
+  precio_sin_iva?: number;
+  iva?: {
+    porcentaje: number;
+  };
+};
+
+const mapServicioProducto = (item: ItemApiResponse): ServicioProducto => ({
+  id: item.id,
+  tipo: item.categoria || 'SERVICIO',
+  nombre: item.nombre,
+  ...(item.descripcion !== undefined ? { descripcion: item.descripcion } : {}),
+  precio: item.precio_sin_iva || 0,
+  iva: item.iva ? (item.iva.porcentaje >= 1 ? item.iva.porcentaje : item.iva.porcentaje * 100) : 13,
+  moneda: 'USD',
+});
+
 export default function Servicios() {
   const { empresas, selectedEmpresaId } = useEmpresa();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [servicios, setServicios] = useState<ServicioProducto[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchServicios = async () => {
+  const fetchServicios = useCallback(async () => {
     if (!selectedEmpresaId) {
       setServicios([]);
       return;
@@ -34,18 +59,10 @@ export default function Servicios() {
     try {
       setLoading(true);
       const res = await authFetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
-      const json = await res.json();
+      const json = (await res.json()) as ApiResponse<ItemApiResponse[]>;
       
       // Mapear los datos que vienen del backend
-      const mapped = (json.data ?? []).map((item: any) => ({
-        id: item.id,
-        tipo: item.categoria || 'SERVICIO',
-        nombre: item.nombre,
-        descripcion: item.descripcion,
-        precio: item.precio_sin_iva || 0,
-        iva: item.iva ? (item.iva.porcentaje >= 1 ? item.iva.porcentaje : item.iva.porcentaje * 100) : 13,
-        moneda: 'USD'
-      }));
+      const mapped = (json.data ?? []).map(mapServicioProducto);
       setServicios(mapped);
     } catch (err) {
       console.error('Error al cargar servicios/items:', err);
@@ -53,11 +70,13 @@ export default function Servicios() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedEmpresaId]);
 
   useEffect(() => {
-    fetchServicios();
-  }, [selectedEmpresaId]);
+    queueMicrotask(() => {
+      void fetchServicios();
+    });
+  }, [fetchServicios]);
 
   const hasItems = servicios.length > 0;
 

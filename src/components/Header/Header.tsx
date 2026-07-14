@@ -1,6 +1,6 @@
 // src/components/Header/Header.tsx
-import { useEmpresa } from '@context/EmpresaContext.tsx';
-import { useAuth } from '../../contexts/AuthContext.tsx';
+import { useEmpresa } from '@context/useEmpresa.ts';
+import { useAuth } from '../../contexts/useAuth.ts';
 import { FaRightFromBracket } from 'react-icons/fa6';
 import "./Header.css";
 

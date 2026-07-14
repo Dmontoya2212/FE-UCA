@@ -9,7 +9,7 @@ type Props = {
   onDelete?: (factura: Factura) => void;
 };
 
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/useAuth';
 
 export default function MostrarFacturas({ facturas, themeIndex = 0, onVer, onDelete }: Props) {
   const { user } = useAuth();

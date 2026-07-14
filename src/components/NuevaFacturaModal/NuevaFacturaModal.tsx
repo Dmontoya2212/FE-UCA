@@ -2,6 +2,7 @@ import { authFetch } from '../../utils/auth';
 import {
   type Dispatch,
   type SetStateAction,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -11,7 +12,7 @@ import { FaXmark, FaRegFloppyDisk, FaPlus, FaTrash } from 'react-icons/fa6';
 import style from './NuevaFacturaModal.module.css';
 import type { ClienteResponse } from '@models/Cliente.ts';
 import type { FacturaResponse } from '@models/Factura.ts';
-import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { useEmpresa } from '@context/useEmpresa.ts';
 import { apiUrl } from '@/config/api';
 
 type NuevaFacturaModalProps = {
@@ -97,37 +98,50 @@ export default function NuevaFacturaModal({
   const isEditMode = !!initialData;
   const isReadOnly = isEditMode && initialData?.estado !== 'BORRADOR';
 
+  const handleReset = useCallback(() => {
+    setCabecera({
+      numero: '',
+      clienteId: '',
+      fechaEmision: getTodayLocal(),
+      monedaCodigo: 'USD',
+      tipoDte: '01',
+    });
+    setLineas([lineaVacia()]);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       dialogRef.current?.showModal();
-      if (initialData) {
-        setCabecera({
-          numero: initialData.numero || '',
-          clienteId: initialData.clienteId || '',
-          fechaEmision: initialData.fechaEmision || getTodayLocal(),
-          monedaCodigo: initialData.monedaCodigo || 'USD',
-          tipoDte: initialData.tipoDte || '01',
-        });
-        if (initialData.lineas && initialData.lineas.length > 0) {
-          setLineas(
-            initialData.lineas.map((l) => ({
-              itemId: l.itemId || '',
-              descripcion: l.descripcion || '',
-              cantidad: String(l.cantidad || '1'),
-              precioSinIva: String(l.precioSinIva || '0'),
-              ivaPorcentaje: String(l.ivaPorcentaje || '13'),
-            }))
-          );
+      queueMicrotask(() => {
+        if (initialData) {
+          setCabecera({
+            numero: initialData.numero || '',
+            clienteId: initialData.clienteId || '',
+            fechaEmision: initialData.fechaEmision || getTodayLocal(),
+            monedaCodigo: initialData.monedaCodigo || 'USD',
+            tipoDte: initialData.tipoDte || '01',
+          });
+          if (initialData.lineas && initialData.lineas.length > 0) {
+            setLineas(
+              initialData.lineas.map((l) => ({
+                itemId: l.itemId || '',
+                descripcion: l.descripcion || '',
+                cantidad: String(l.cantidad || '1'),
+                precioSinIva: String(l.precioSinIva || '0'),
+                ivaPorcentaje: String(l.ivaPorcentaje || '13'),
+              }))
+            );
+          } else {
+            setLineas([lineaVacia()]);
+          }
         } else {
-          setLineas([lineaVacia()]);
+          handleReset();
         }
-      } else {
-        handleReset();
-      }
+      });
     } else {
       setTimeout(() => dialogRef.current?.close(), 300);
     }
-  }, [isOpen, initialData]);
+  }, [isOpen, initialData, handleReset]);
 
   const handleClose = () => setIsOpen(false);
 
@@ -181,17 +195,6 @@ export default function NuevaFacturaModal({
   const totalFactura = lineas.reduce((acc, l) => acc + calcularTotal(l), 0);
   const subtotalFactura = lineas.reduce((acc, l) => acc + ((parseFloat(l.cantidad) || 0) * (parseFloat(l.precioSinIva) || 0)), 0);
   const ivaFactura = totalFactura - subtotalFactura;
-
-  const handleReset = () => {
-    setCabecera({
-      numero: '',
-      clienteId: '',
-      fechaEmision: getTodayLocal(),
-      monedaCodigo: 'USD',
-      tipoDte: '01',
-    });
-    setLineas([lineaVacia()]);
-  };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

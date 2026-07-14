@@ -1,14 +1,44 @@
 import { authFetch } from '../../utils/auth';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import MostrarClientes from '../../components/Clientes/MostrarClientes';
 import NuevoClienteModal from '../../components/NuevoClienteModal/NuevoClienteModal';
 import { FaUsers, FaPlus } from 'react-icons/fa6';
 import type { ClienteResponse } from '@models/Cliente.ts';
-import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { useEmpresa } from '@context/useEmpresa.ts';
 import { apiUrl } from '@/config/api';
 import './Clientes.css';
 
 const API_BASE = apiUrl('/api/v1/facturacion/cliente');
+
+type ApiResponse<T> = {
+  data?: T;
+};
+
+type ClienteApiResponse = {
+  id: string;
+  empresa_id?: string;
+  nombre_razon_social?: string;
+  nif_cif?: string;
+  email?: string;
+  direccion?: string;
+  ciudad?: string;
+  codigo_postal?: string;
+  telefono?: string;
+  activo?: boolean;
+};
+
+const mapCliente = (c: ClienteApiResponse): ClienteResponse => ({
+  id: c.id,
+  ...(c.empresa_id !== undefined ? { empresaId: c.empresa_id } : {}),
+  ...(c.nombre_razon_social !== undefined ? { nombreRazonSocial: c.nombre_razon_social } : {}),
+  ...(c.nif_cif !== undefined ? { nifCif: c.nif_cif } : {}),
+  ...(c.email !== undefined ? { email: c.email } : {}),
+  ...(c.direccion !== undefined ? { direccion: c.direccion } : {}),
+  ...(c.ciudad !== undefined ? { ciudad: c.ciudad } : {}),
+  ...(c.codigo_postal !== undefined ? { codigoPostal: c.codigo_postal } : {}),
+  ...(c.telefono !== undefined ? { telefono: c.telefono } : {}),
+  ...(c.activo !== undefined ? { activo: c.activo } : {}),
+});
 
 export default function Clientes() {
   const { empresas, selectedEmpresaId } = useEmpresa();
@@ -16,7 +46,7 @@ export default function Clientes() {
   const [clientes, setClientes] = useState<ClienteResponse[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchClientes = async () => {
+  const fetchClientes = useCallback(async () => {
     if (!selectedEmpresaId) {
       setClientes([]);
       return;
@@ -25,19 +55,8 @@ export default function Clientes() {
     try {
       setLoading(true);
       const res = await authFetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
-      const json = await res.json();
-      const mapped = (json.data ?? []).map((c: any) => ({
-        id: c.id,
-        empresaId: c.empresa_id,
-        nombreRazonSocial: c.nombre_razon_social,
-        nifCif: c.nif_cif,
-        email: c.email,
-        direccion: c.direccion,
-        ciudad: c.ciudad,
-        codigoPostal: c.codigo_postal,
-        telefono: c.telefono,
-        activo: c.activo
-      }));
+      const json = (await res.json()) as ApiResponse<ClienteApiResponse[]>;
+      const mapped = (json.data ?? []).map(mapCliente);
       setClientes(mapped);
     } catch (err) {
       console.error('Error al cargar clientes:', err);
@@ -45,11 +64,13 @@ export default function Clientes() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedEmpresaId]);
 
   useEffect(() => {
-    fetchClientes();
-  }, [selectedEmpresaId]);
+    queueMicrotask(() => {
+      void fetchClientes();
+    });
+  }, [fetchClientes]);
 
   const hasClientes = clientes.length > 0;
 

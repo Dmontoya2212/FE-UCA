@@ -40,7 +40,11 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
 
   if (res.status === 401) {
     localStorage.removeItem('user_session');
-    window.location.href = '/login';
+    localStorage.removeItem('selectedEmpresaId');
+
+    if (window.location.pathname !== '/login') {
+      window.location.assign('/login');
+    }
   }
 
   return res;
