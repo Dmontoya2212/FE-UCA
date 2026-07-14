@@ -1,6 +1,7 @@
 import { authFetch } from '../utils/auth';
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { EmpresaResponse } from '@models/Empresa.ts';
+import { useAuth } from './AuthContext';
 
 const EMPRESA_API = 'http://localhost:8080/api/v1/facturacion/empresa';
 
@@ -15,6 +16,7 @@ type EmpresaContextType = {
 const EmpresaContext = createContext<EmpresaContextType | undefined>(undefined);
 
 export function EmpresaProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [empresas, setEmpresas] = useState<EmpresaResponse[]>([]);
   const [selectedEmpresaId, setSelectedEmpresaIdState] = useState<string | null>(() => {
     return localStorage.getItem('selectedEmpresaId');
@@ -55,8 +57,15 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    refreshEmpresas();
-  }, []);
+    const session = localStorage.getItem('user_session');
+    if (session) {
+      refreshEmpresas();
+    } else {
+      setEmpresas([]);
+      setSelectedEmpresaId(null);
+      setLoading(false);
+    }
+  }, [user]);
 
   return (
     <EmpresaContext.Provider

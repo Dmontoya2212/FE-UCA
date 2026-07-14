@@ -19,7 +19,7 @@ type NuevaFacturaModalProps = {
   clientes?: ClienteResponse[];
   servicios?: { id: string; nombre: string; descripcion?: string; precio_sin_iva: number; iva: { porcentaje: number } }[];
   onCreated?: () => void;
-  initialData?: FacturaResponse;
+  initialData?: FacturaResponse | undefined;
 };
 
 type FacturaCabecera = {

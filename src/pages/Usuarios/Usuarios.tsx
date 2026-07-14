@@ -22,7 +22,7 @@ export default function Usuarios() {
     
     try {
       setLoading(true);
-      const res = await authFetch(`${API_BASE}?empresaId=${selectedEmpresaId}`);
+      const res = await authFetch(`http://localhost:8080/api/v1/empresas/${selectedEmpresaId}/usuarios`);
       const json = await res.json();
       setUsuarios(json.data ?? []);
     } catch (err) {
@@ -41,7 +41,7 @@ export default function Usuarios() {
     if (!selectedEmpresaId) return;
     if (confirm('¿Seguro que deseas eliminar este usuario?')) {
       try {
-        await authFetch(`${API_BASE}/${id}?empresaId=${selectedEmpresaId}`, { method: 'DELETE' });
+        await authFetch(`http://localhost:8080/api/v1/empresas/${selectedEmpresaId}/usuarios/${id}`, { method: 'DELETE' });
         fetchUsuarios();
       } catch (e) {
         console.error(e);
