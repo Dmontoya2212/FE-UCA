@@ -24,7 +24,7 @@ export default function Usuarios() {
       setUsuarios([]);
       return;
     }
-    
+
     try {
       setLoading(true);
       const res = await authFetch(`${API_BASE}?empresaId=${selectedEmpresaId}`);
@@ -139,9 +139,9 @@ export default function Usuarios() {
         </div>
       )}
 
-      <NuevoUsuarioModal 
-        isOpen={modalAbierto} 
-        setIsOpen={setModalAbierto} 
+      <NuevoUsuarioModal
+        isOpen={modalAbierto}
+        setIsOpen={setModalAbierto}
         onCreated={fetchUsuarios}
         empresasDisponibles={empresas}
       />

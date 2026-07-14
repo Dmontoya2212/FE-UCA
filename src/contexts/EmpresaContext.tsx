@@ -39,12 +39,10 @@ export function EmpresaProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       const res = await authFetch(EMPRESA_API);
-      
       const json = (await res.json()) as ApiResponse<EmpresaResponse[]>;
       const list = json.data ?? [];
       setEmpresas(list);
 
-      // Select default if saved one is invalid or none selected
       const savedId = localStorage.getItem('selectedEmpresaId');
       const exists = list.some((emp: EmpresaResponse) => emp.id === savedId);
       const firstEmpresaId = list[0]?.id;
