@@ -6,11 +6,12 @@ import { FaFileInvoice, FaPlus } from 'react-icons/fa6';
 import type { FacturaResponse } from '@models/Factura.ts';
 import type { ClienteResponse } from '@models/Cliente.ts';
 import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { apiUrl } from '@/config/api';
 import './Facturas.css';
 
-const FACTURA_API = 'http://localhost:8080/api/v1/facturacion/factura';
-const CLIENTE_API = 'http://localhost:8080/api/v1/facturacion/cliente';
-const ITEM_API = 'http://localhost:8080/api/v1/facturacion/item';
+const FACTURA_API = apiUrl('/api/v1/facturacion/factura');
+const CLIENTE_API = apiUrl('/api/v1/facturacion/cliente');
+const ITEM_API = apiUrl('/api/v1/facturacion/item');
 
 export default function Facturas() {
   const { empresas, selectedEmpresaId } = useEmpresa();

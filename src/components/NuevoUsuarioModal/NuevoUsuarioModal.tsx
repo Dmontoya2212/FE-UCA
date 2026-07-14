@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { authFetch } from '../../utils/auth';
 import type { EmpresaResponse } from '@models/Empresa';
 import { FaTimes } from 'react-icons/fa';
+import { apiUrl } from '@/config/api';
 import './NuevoUsuarioModal.css';
+
+const API_BASE = apiUrl('/api/v1/facturacion/usuario');
 
 interface NuevoUsuarioModalProps {
   isOpen: boolean;
@@ -39,7 +42,7 @@ export default function NuevoUsuarioModal({ isOpen, setIsOpen, onCreated, empres
     setError('');
     
     try {
-      const res = await authFetch('http://localhost:8080/api/v1/facturacion/usuario', {
+      const res = await authFetch(API_BASE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

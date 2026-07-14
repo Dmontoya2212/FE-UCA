@@ -4,9 +4,10 @@ import NuevoUsuarioModal from '../../components/NuevoUsuarioModal/NuevoUsuarioMo
 import { FaUserShield, FaPlus, FaTrash, FaPen } from 'react-icons/fa6';
 import type { UsuarioResponse } from '@models/Usuario.ts';
 import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { apiUrl } from '@/config/api';
 import './Usuarios.css';
 
-const API_BASE = 'http://localhost:8080/api/v1/facturacion/usuario';
+const API_BASE = apiUrl('/api/v1/facturacion/usuario');
 
 export default function Usuarios() {
   const { selectedEmpresaId, empresas } = useEmpresa();

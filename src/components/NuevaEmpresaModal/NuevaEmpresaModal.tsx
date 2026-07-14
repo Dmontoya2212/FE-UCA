@@ -8,6 +8,7 @@ import {
 } from 'react';
 import style from '@components/NuevaEmpresaModal/NuevaEmpresaModal.module.css';
 import { FaXmark, FaRegFloppyDisk, FaEye, FaEyeSlash } from 'react-icons/fa6';
+import { apiUrl } from '@/config/api';
 
 type NuevaEmpresaModalProps = {
   isOpen: boolean;
@@ -57,7 +58,7 @@ const INITIAL_FORM: NuevaEmpresaForm = {
   expireToken: '',
 };
 
-const API_BASE = 'http://localhost:8080/api/v1/facturacion/empresa';
+const API_BASE = apiUrl('/api/v1/facturacion/empresa');
 
 const NuevaEmpresaModal = ({
   isOpen,

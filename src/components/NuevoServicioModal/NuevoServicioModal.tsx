@@ -10,6 +10,7 @@ import DropDown from '@components/DropDown/DropDown.tsx';
 import style from '@components/NuevoServicioModal/NuevoServicioModal.module.css';
 import { FaRegFloppyDisk, FaXmark, FaDollarSign } from 'react-icons/fa6';
 import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { apiUrl } from '@/config/api';
 
 type NuevoServicioModalProps = {
   isOpen: boolean;
@@ -32,8 +33,9 @@ const categorias = [
   { value: 'OTRO', label: 'Otro' },
 ];
 
-const API_BASE = 'http://localhost:8080/api/v1/facturacion/item';
-const IVA_API = 'http://localhost:8080/api/v1/facturacion/iva/empresa';
+const API_BASE = apiUrl('/api/v1/facturacion/item');
+const IVA_API = apiUrl('/api/v1/facturacion/iva/empresa');
+const IVA_CREATE_API = apiUrl('/api/v1/facturacion/iva');
 
 const INITIAL_FORM: NuevoServicioForm = {
   nombre: '',
@@ -60,7 +62,7 @@ const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModal
 
           // Si la empresa no tiene IVAs configurados, "quemamos" o creamos el 13% por defecto automáticamente.
           if (list.length === 0) {
-            await authFetch('http://localhost:8080/api/v1/facturacion/iva', {
+            await authFetch(IVA_CREATE_API, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -83,7 +85,7 @@ const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModal
           setIvaOptions(mapped);
           setFormData(prev => {
             if (mapped.length > 0 && !prev.iva) {
-              return { ...prev, iva: mapped[0].value };
+              return { ...prev, iva: mapped[0]?.value ?? '' };
             }
             return prev;
           });
@@ -111,7 +113,7 @@ const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModal
   const handleReset = () => {
     setFormData({
       ...INITIAL_FORM,
-      iva: ivaOptions.length > 0 ? ivaOptions[0].value : '',
+      iva: ivaOptions[0]?.value ?? '',
     });
   };
 
