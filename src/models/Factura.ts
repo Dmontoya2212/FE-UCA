@@ -6,6 +6,7 @@ export interface FacturaRequest {
   numero: string;
   fechaEmision: string; // LocalDate → "YYYY-MM-DD"
   monedaCodigo?: string;
+  tipoDte?: string;
 }
 
 export interface FacturaUpdateRequest {
@@ -13,6 +14,7 @@ export interface FacturaUpdateRequest {
   numero?: string;
   fechaEmision?: string;
   monedaCodigo?: string;
+  tipoDte?: string;
 }
 
 export interface FacturaResponse {
@@ -30,6 +32,24 @@ export interface FacturaResponse {
   totalIva: number;
   totalConIva: number;
 
+  tipoDte?: string;
+  codigoGeneracion?: string;
+  numeroControl?: string;
+  selloRecibido?: string;
+  fechaRecepcion?: string;
+  lineas?: {
+    itemId?: string;
+    descripcion?: string;
+    cantidad?: number;
+    precioSinIva?: number;
+    ivaPorcentaje?: number;
+  }[];
+
   createdAt: string;
   updatedAt?: string;
+}
+
+export interface Factura extends FacturaResponse {
+  clienteNombre?: string;
+  fechaVencimiento?: string;
 }

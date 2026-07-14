@@ -1,20 +1,34 @@
+import { authFetch } from '../../utils/auth';
 import { useEffect, useState } from 'react';
 import NuevaEmpresaModal from '@components/NuevaEmpresaModal/NuevaEmpresaModal';
-import { FaBuilding, FaPlus, FaFileLines } from 'react-icons/fa6';
+import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { 
+  FaBuilding, 
+  FaPlus, 
+  FaFileLines, 
+  FaEnvelope, 
+  FaPhone, 
+  FaMapPin, 
+  FaBriefcase, 
+  FaFingerprint, 
+  FaGlobe
+} from 'react-icons/fa6';
 import type { EmpresaResponse } from '@models/Empresa.ts';
+import { apiUrl } from '@/config/api';
 import './Empresa.css';
 
-const API_BASE = 'http://localhost:8080/api/v1/facturacion/empresa';
+const API_BASE = apiUrl('/api/v1/facturacion/empresa');
 
 export default function Empresa() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [empresas, setEmpresas] = useState<EmpresaResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const { selectedEmpresaId, setSelectedEmpresaId } = useEmpresa();
 
   const fetchEmpresas = async () => {
     try {
       setLoading(true);
-      const res = await fetch(API_BASE);
+      const res = await authFetch(API_BASE);
       const json = await res.json();
       setEmpresas(json.data ?? []);
     } catch (err) {
@@ -83,62 +97,93 @@ export default function Empresa() {
         </div>
       ) : (
         <div className="empresa__grid">
-          {empresas.map((emp) => (
-            <div key={emp.id} className="empresa__card">
-              <div className="empresa__cardHeader">
-                <div className="empresa__cardIconBox">
-                  <FaBuilding className="empresa__cardIcon" />
+          {empresas.map((emp, index) => {
+            const styleIndex = index % 4;
+            const isActive = emp.id === selectedEmpresaId;
+            return (
+              <div 
+                key={emp.id} 
+                className={`empresa__card empresa__card--style-${styleIndex} ${isActive ? 'empresa__card--active' : ''}`}
+                onClick={() => setSelectedEmpresaId(emp.id)}
+                title="Hacer clic para seleccionar esta empresa"
+              >
+                <div className="empresa__cardBadge">
+                  {isActive ? (
+                    <span className="empresa__badgeActive">Activa</span>
+                  ) : (
+                    <>
+                      <FaGlobe className="empresa__badgeIcon" />
+                      <span>{emp.ciudad || emp.pais || 'El Salvador'}</span>
+                    </>
+                  )}
                 </div>
-                <div className="empresa__cardInfo">
-                  <h3 className="empresa__cardName">
-                    {emp.razon_social || emp.nombre_legal}
-                  </h3>
-                  {emp.nombre_comercial && (
+
+                <div className="empresa__cardHeader">
+                  <div className="empresa__cardIconBox">
+                    <FaBuilding className="empresa__cardIcon" />
+                  </div>
+                  <div className="empresa__cardInfo">
+                    <h3 className="empresa__cardName" title={emp.razon_social || emp.razonSocial || emp.nombre_legal || emp.nombreLegal || emp.nombre_comercial || emp.nombreComercial}>
+                      {emp.razon_social || emp.razonSocial || emp.nombre_legal || emp.nombreLegal || emp.nombre_comercial || emp.nombreComercial || 'Empresa Registrada'}
+                    </h3>
                     <p className="empresa__cardCommercial">
-                      {emp.nombre_comercial}
+                      {emp.nombre_comercial || emp.nombreComercial || 'Sede Principal'}
                     </p>
+                  </div>
+                </div>
+
+                <div className="empresa__cardBody">
+                  <div className="empresa__cardRow">
+                    <span className="empresa__cardLabel">
+                      <FaFingerprint className="empresa__rowIcon" />
+                      <span>NIT</span>
+                    </span>
+                    <span className="empresa__cardValue">{emp.nit}</span>
+                  </div>
+                  {emp.email && (
+                    <div className="empresa__cardRow">
+                      <span className="empresa__cardLabel">
+                        <FaEnvelope className="empresa__rowIcon" />
+                        <span>Email</span>
+                      </span>
+                      <span className="empresa__cardValue" title={emp.email}>{emp.email}</span>
+                    </div>
+                  )}
+                  {emp.telefono && (
+                    <div className="empresa__cardRow">
+                      <span className="empresa__cardLabel">
+                        <FaPhone className="empresa__rowIcon" />
+                        <span>Teléfono</span>
+                      </span>
+                      <span className="empresa__cardValue">{emp.telefono}</span>
+                    </div>
+                  )}
+                  {emp.direccion && (
+                    <div className="empresa__cardRow">
+                      <span className="empresa__cardLabel">
+                        <FaMapPin className="empresa__rowIcon" />
+                        <span>Dirección</span>
+                      </span>
+                      <span className="empresa__cardValue" title={emp.direccion}>
+                        {emp.direccion}
+                      </span>
+                    </div>
+                  )}
+                  {(emp.actividad_economica || emp.actividadEconomica) && (
+                    <div className="empresa__cardRow">
+                      <span className="empresa__cardLabel">
+                        <FaBriefcase className="empresa__rowIcon" />
+                        <span>Giro/Actividad</span>
+                      </span>
+                      <span className="empresa__cardValue" title={emp.actividad_economica || emp.actividadEconomica}>
+                        {emp.actividad_economica || emp.actividadEconomica}
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>
-
-              <div className="empresa__cardBody">
-                <div className="empresa__cardRow">
-                  <span className="empresa__cardLabel">NIT</span>
-                  <span className="empresa__cardValue">{emp.nit}</span>
-                </div>
-                {emp.email && (
-                  <div className="empresa__cardRow">
-                    <span className="empresa__cardLabel">Email</span>
-                    <span className="empresa__cardValue">{emp.email}</span>
-                  </div>
-                )}
-                {emp.telefono && (
-                  <div className="empresa__cardRow">
-                    <span className="empresa__cardLabel">Teléfono</span>
-                    <span className="empresa__cardValue">
-                      {emp.telefono}
-                    </span>
-                  </div>
-                )}
-                {emp.direccion && (
-                  <div className="empresa__cardRow">
-                    <span className="empresa__cardLabel">Dirección</span>
-                    <span className="empresa__cardValue">
-                      {emp.direccion}
-                    </span>
-                  </div>
-                )}
-                {emp.actividad_economica && (
-                  <div className="empresa__cardRow">
-                    <span className="empresa__cardLabel">Actividad</span>
-                    <span className="empresa__cardValue">
-                      {emp.actividad_economica}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

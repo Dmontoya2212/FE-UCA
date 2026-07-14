@@ -1,9 +1,10 @@
 export interface UsuarioRequest {
-  empresaId: string; // UUID
+  empresaIds: string[]; // UUIDs
   nombre: string;
   email: string;
-  password: string;
+  password?: string;
   esAdmin?: boolean;
+  rol: string;
 }
 
 export interface UsuarioUpdateRequest {
@@ -12,16 +13,19 @@ export interface UsuarioUpdateRequest {
   esAdmin?: boolean;
   activo?: boolean;
   password?: string;
+  rol?: string;
+  empresaIds?: string[];
 }
 
 export interface UsuarioResponse {
   id: string;
-  empresa_id: string;
+  empresaIds: string[];
 
   nombre: string;
   email: string;
 
-  es_admin?: boolean;
+  esAdmin?: boolean;
+  rol: string;
   activo?: boolean;
 
   created_at: string;

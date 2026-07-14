@@ -1,3 +1,4 @@
+import { authFetch } from '../../utils/auth';
 import {
   type Dispatch,
   type SetStateAction,
@@ -7,13 +8,14 @@ import {
 } from 'react';
 import DropDown from '@components/DropDown/DropDown.tsx';
 import style from '@components/NuevoServicioModal/NuevoServicioModal.module.css';
-// import DropDown from "../DropDown/DropDown";
-// import style from "./NuevoServicioModal.module.css";
 import { FaRegFloppyDisk, FaXmark, FaDollarSign } from 'react-icons/fa6';
+import { useEmpresa } from '@context/EmpresaContext.tsx';
+import { apiUrl } from '@/config/api';
 
 type NuevoServicioModalProps = {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  onCreated?: () => void;
 };
 
 type NuevoServicioForm = {
@@ -25,27 +27,75 @@ type NuevoServicioForm = {
 };
 
 const categorias = [
-  { value: 'servicio', label: 'Servicio' },
-  { value: 'producto', label: 'Producto' },
-  { value: 'consultoria', label: 'Consultoría' },
-  { value: 'otro', label: 'Otro' },
+  { value: 'SERVICIO', label: 'Servicio' },
+  { value: 'PRODUCTO', label: 'Producto' },
+  { value: 'CONSULTORIA', label: 'Consultoría' },
+  { value: 'OTRO', label: 'Otro' },
 ];
 
-const ivaOptions = [
-  { value: '13', label: '13% - General' },
-  { value: '0', label: '0% - Exento' },
-];
+const API_BASE = apiUrl('/api/v1/facturacion/item');
+const IVA_API = apiUrl('/api/v1/facturacion/iva/empresa');
+const IVA_CREATE_API = apiUrl('/api/v1/facturacion/iva');
 
-const NuevoServicioModal = ({ isOpen, setIsOpen }: NuevoServicioModalProps) => {
+const INITIAL_FORM: NuevoServicioForm = {
+  nombre: '',
+  descripcion: '',
+  categoria: 'SERVICIO',
+  iva: '',
+  precio: '',
+};
+
+const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModalProps) => {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
+  const { selectedEmpresaId } = useEmpresa();
+  const [formData, setFormData] = useState<NuevoServicioForm>(INITIAL_FORM);
+  const [saving, setSaving] = useState(false);
+  const [ivaOptions, setIvaOptions] = useState<{value: string, label: string}[]>([]);
 
-  const [formData, setFormData] = useState<NuevoServicioForm>({
-    nombre: '',
-    descripcion: '',
-    categoria: 'servicio',
-    iva: '13',
-    precio: '',
-  });
+  useEffect(() => {
+    if (selectedEmpresaId) {
+      const loadIvas = async () => {
+        try {
+          let res = await authFetch(`${IVA_API}/${selectedEmpresaId}`);
+          let j = await res.json();
+          let list = j.data ?? [];
+
+          // Si la empresa no tiene IVAs configurados, "quemamos" o creamos el 13% por defecto automáticamente.
+          if (list.length === 0) {
+            await authFetch(IVA_CREATE_API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                empresa_id: selectedEmpresaId,
+                nombre: 'IVA El Salvador',
+                porcentaje: 13
+              })
+            });
+            // Recargar la lista después de crearlo
+            res = await authFetch(`${IVA_API}/${selectedEmpresaId}`);
+            j = await res.json();
+            list = j.data ?? [];
+          }
+
+          const mapped = list.map((iva: { id: string; nombre: string; porcentaje: number }) => ({
+            value: iva.id,
+            label: `${iva.nombre} (${iva.porcentaje}%)`
+          }));
+          
+          setIvaOptions(mapped);
+          setFormData(prev => {
+            if (mapped.length > 0 && !prev.iva) {
+              return { ...prev, iva: mapped[0]?.value ?? '' };
+            }
+            return prev;
+          });
+        } catch (e) {
+          console.error("Error al cargar/crear IVAs:", e);
+        }
+      };
+      loadIvas();
+    }
+  }, [selectedEmpresaId]);
 
   const handleCloseDialog = () => {
     setIsOpen(false);
@@ -57,35 +107,64 @@ const NuevoServicioModal = ({ isOpen, setIsOpen }: NuevoServicioModalProps) => {
     >,
   ) => {
     const { name, value } = e.target;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleReset = () => {
     setFormData({
-      nombre: '',
-      descripcion: '',
-      categoria: 'servicio',
-      iva: '13',
-      precio: '',
+      ...INITIAL_FORM,
+      iva: ivaOptions[0]?.value ?? '',
     });
   };
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    console.log('datos enviados', formData);
+    if (!selectedEmpresaId) {
+      alert("Debes seleccionar una empresa primero.");
+      return;
+    }
 
-    setFormData({
-      nombre: '',
-      descripcion: '',
-      categoria: 'servicio',
-      iva: '13',
-      precio: '',
-    });
+    if (!formData.nombre.trim() || !formData.precio) return;
+    if (!formData.iva) {
+      alert("Debes seleccionar un IVA. Si no hay ninguno, créalo primero.");
+      return;
+    }
+
+    const payload = {
+      empresa_id: selectedEmpresaId,
+      nombre: formData.nombre,
+      descripcion: formData.descripcion || formData.nombre,
+      categoria: formData.categoria,
+      iva_id: formData.iva,
+      precio_sin_iva: parseFloat(formData.precio),
+      activo: true
+    };
+
+    try {
+      setSaving(true);
+      const res = await authFetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error('Error al crear servicio:', err);
+        alert(typeof err.data === 'string' ? err.data : (Array.isArray(err.data) ? err.data[0] : 'Error al crear el servicio/producto'));
+        return;
+      }
+
+      handleReset();
+      setIsOpen(false);
+      onCreated?.();
+    } catch (err) {
+      console.error('Error de red:', err);
+      alert('No se pudo conectar con el servidor');
+    } finally {
+      setSaving(false);
+    }
   };
 
   useEffect(() => {
@@ -123,7 +202,7 @@ const NuevoServicioModal = ({ isOpen, setIsOpen }: NuevoServicioModalProps) => {
             <form className={`${style.dialogForm}`}>
               <div className={`${style.wrapper}`}>
                 <label className={`${style.labelForm} ${style.full}`}>
-                  Nombre
+                  Nombre / Código
                   <input
                     className={`${style.inputForm}`}
                     placeholder={`Ej: Consultoría IT, Desarrollo Web, Producto X`}
@@ -165,9 +244,9 @@ const NuevoServicioModal = ({ isOpen, setIsOpen }: NuevoServicioModalProps) => {
                 </label>
 
                 <label className={`${style.labelForm}`}>
-                  IVA (%)
+                  IVA
                   <DropDown
-                    options={ivaOptions}
+                    options={ivaOptions.length > 0 ? ivaOptions : [{value: '', label: 'Cargando IVAs...'}]}
                     value={formData.iva}
                     onChange={(value: string) => {
                       setFormData((prev: NuevoServicioForm) => ({
@@ -221,12 +300,13 @@ const NuevoServicioModal = ({ isOpen, setIsOpen }: NuevoServicioModalProps) => {
               className={`${style.button} ${style.saveButton}`}
               title={'Enviar datos'}
               onClick={handleSubmit}
+              disabled={saving}
             >
               <FaRegFloppyDisk
                 className={`${style.icon} ${style.iconSave}`}
                 title={`Cerrar`}
               />
-              Guardar
+              {saving ? 'Guardando...' : 'Guardar'}
             </button>
           </section>
         </article>

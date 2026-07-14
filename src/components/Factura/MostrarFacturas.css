@@ -1,113 +1,206 @@
 .mf {
-    font-family: var(--font-body);
+  font-family: var(--font-body);
+  color: rgb(var(--color-foreground-main));
 }
 
+/* Container styling with premium border and shadow */
 .mf__tableWrap {
-    background: rgb(var(--color-secondary-background));
-    border-radius: var(--ui-border-radius);
-    padding: 14px 16px;
+  background: rgb(var(--color-background-app));
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(var(--color-foreground-main), 0.08);
+  box-shadow: 0 12px 30px rgba(var(--color-foreground-main), 0.03), 
+              0 1px 3px rgba(var(--color-foreground-main), 0.01);
+  overflow-x: auto;
 }
 
+/* Table utilizing separate border structure for floating rows */
 .mf__table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
 }
 
+/* Header Columns */
 .mf__table thead th {
-    text-align: left;
-    font-family: var(--font-heading);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    color: rgb(var(--color-muted-foreground));
-    padding-bottom: 10px;
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: rgb(var(--color-muted-foreground));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 20px 16px;
+  border: none;
 }
 
-.mf__table tbody td {
-    padding: 12px 0;
-    font-size: var(--font-size-sm);
-    border-top: 1px solid rgb(var(--color-muted));
-    vertical-align: middle;
+/* Dynamic row color definitions corresponding to company palette */
+.mf__row--style-0 {
+  --row-accent-color: 59, 130, 246; /* Blue */
+}
+.mf__row--style-1 {
+  --row-accent-color: 20, 184, 166; /* Teal */
+}
+.mf__row--style-2 {
+  --row-accent-color: 139, 92, 246; /* Purple */
+}
+.mf__row--style-3 {
+  --row-accent-color: 16, 185, 129; /* Emerald */
 }
 
-.mf__table tbody tr:first-child td {
-    border-top: none;
+/* Individual row styling */
+.mf__row {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover effect: Subtle lift and left-shifting transition */
+.mf__row:hover {
+  background: rgba(var(--row-accent-color), 0.02) !important;
+  transform: translateX(4px);
+}
+
+/* Row cells layout */
+.mf__row td {
+  padding: 16px 20px;
+  font-size: var(--font-size-sm);
+  background: rgba(var(--color-foreground-main), 0.015);
+  border-top: 1px solid rgba(var(--color-foreground-main), 0.04);
+  border-bottom: 1px solid rgba(var(--color-foreground-main), 0.04);
+  vertical-align: middle;
+  transition: all 0.25s ease;
+}
+
+/* Left accent border and rounded corners for floating row effect */
+.mf__row td:first-child {
+  border-left: 4px solid rgb(var(--row-accent-color));
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  padding-left: 24px;
+}
+
+.mf__row td:last-child {
+  border-right: 1px solid rgba(var(--color-foreground-main), 0.04);
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  padding-right: 24px;
+}
+
+.mf__row:hover td {
+  border-color: rgba(var(--row-accent-color), 0.15);
+  background: rgba(var(--row-accent-color), 0.01);
+}
+
+/* Highlight primary text on hover with local accent color */
+.mf__strong {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-bold);
+  color: rgb(var(--color-foreground-main));
+  transition: color 0.25s ease;
+}
+
+.mf__row:hover .mf__strong {
+  color: rgb(var(--row-accent-color));
 }
 
 .mf__numero {
-    font-family: var(--font-mono);
-    font-weight: var(--font-weight-semibold);
-    color: rgb(var(--color-secondary-foreground));
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-semibold);
 }
 
 .mf__total {
-    font-family: var(--font-mono);
-    font-weight: var(--font-weight-semibold);
-    color: rgb(var(--color-foreground-main));
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-bold);
+  color: rgb(var(--color-foreground-main));
 }
 
+/* Muted secondary columns styling */
 .mf__muted {
-    color: rgb(var(--color-muted-foreground));
+  color: rgb(var(--color-muted-foreground));
+  font-weight: var(--font-weight-medium);
 }
 
 /* Badge de estado */
 .mf__badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-family: var(--font-heading);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .mf__badge--borrador {
-    background: rgba(var(--color-muted-foreground), 0.15);
-    color: rgb(var(--color-muted-foreground));
+  background: rgba(var(--color-muted-foreground), 0.12);
+  color: rgb(var(--color-muted-foreground));
 }
 
 .mf__badge--enviada {
-    background: rgba(var(--color-chart-total), 0.15);
-    color: rgb(var(--color-chart-total));
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
 }
 
 .mf__badge--pagada {
-    background: rgba(var(--color-success), 0.15);
-    color: rgb(var(--color-success));
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
 }
 
-/* Acciones */
+.mf__badge--anulada {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+/* Actions and buttons column */
 .mf__thActions,
 .mf__actions {
-    text-align: right;
+  text-align: right;
 }
 
 .mf__actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
 }
 
+/* Icon Buttons stylings */
 .mf__iconBtn {
-    border: none;
-    background: rgb(var(--color-background-app));
-    cursor: pointer;
-    padding: 6px;
-    border-radius: var(--ui-border-radius);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease, transform 0.1s ease;
+  border: 1px solid rgba(var(--color-foreground-main), 0.08);
+  background: rgb(var(--color-background-app));
+  color: rgb(var(--color-muted-foreground));
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(var(--color-foreground-main), 0.01);
 }
 
-.mf__iconBtn:hover {
-    background: rgb(var(--color-accent));
-    transform: scale(1.05);
+/* View button colors */
+.mf__iconBtn--view:hover {
+  background: rgba(var(--row-accent-color), 0.08);
+  color: rgb(var(--row-accent-color));
+  border-color: rgba(var(--row-accent-color), 0.24);
+  box-shadow: 0 4px 12px rgba(var(--row-accent-color), 0.15);
 }
 
-.mf__iconBtn--danger {
-    color: rgb(var(--color-destructive));
+/* Delete button colors */
+.mf__iconBtn--danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: rgb(239, 68, 68);
+  border-color: rgba(239, 68, 68, 0.24);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
 }
 
+/* Empty message styling */
 .mf__emptyCell {
-    padding: 14px 0;
-    color: rgb(var(--color-muted-foreground));
+  padding: 32px 0 !important;
+  text-align: center;
+  color: rgb(var(--color-muted-foreground));
+  background: transparent !important;
+  border: none !important;
 }
