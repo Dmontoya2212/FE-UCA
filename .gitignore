@@ -10,7 +10,18 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+
+# Environment files
+.env
+.env.*
+!.env.example
 *.local
+
+# Tooling caches
+.vite
+.eslintcache
+.turbo
+.vercel
 
 # Editor directories and files
 .vscode/*
