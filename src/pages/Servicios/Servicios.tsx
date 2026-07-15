@@ -7,7 +7,7 @@ import { apiUrl } from '@/config/api';
 import { FaBoxOpen, FaPlus } from 'react-icons/fa6';
 import './Servicios.css';
 
-const API_BASE = apiUrl('/api/v1/facturacion/item');
+const API_BASE = apiUrl('/api/v1/empresas');
 
 type ServicioProducto = {
   id: string; // UUID from backend
@@ -58,7 +58,7 @@ export default function Servicios() {
 
     try {
       setLoading(true);
-      const res = await authFetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
+      const res = await authFetch(`${API_BASE}/${selectedEmpresaId}/items`);
       const json = (await res.json()) as ApiResponse<ItemApiResponse[]>;
       
       // Mapear los datos que vienen del backend

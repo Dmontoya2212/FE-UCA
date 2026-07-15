@@ -9,9 +9,9 @@ import { useEmpresa } from '@context/useEmpresa.ts';
 import { apiUrl } from '@/config/api';
 import './Facturas.css';
 
-const FACTURA_API = apiUrl('/api/v1/facturacion/factura');
-const CLIENTE_API = apiUrl('/api/v1/facturacion/cliente');
-const ITEM_API = apiUrl('/api/v1/facturacion/item');
+const FACTURA_API = apiUrl('/api/v1/empresas');
+const CLIENTE_API = apiUrl('/api/v1/empresas');
+const ITEM_API = apiUrl('/api/v1/empresas');
 
 type ApiResponse<T> = {
   data?: T;
@@ -72,19 +72,19 @@ export default function Facturas() {
     try {
       setLoading(true);
       // Cargar facturas
-      const facturasRes = await authFetch(`${FACTURA_API}?empresaId=${selectedEmpresaId}`);
+      const facturasRes = await authFetch(`${FACTURA_API}/${selectedEmpresaId}/facturas`);
       const facturasJson = (await facturasRes.json()) as ApiResponse<FacturaResponse[]>;
       setFacturas(facturasJson.data ?? []);
 
       // Cargar clientes para el modal
-      const clientesRes = await authFetch(`${CLIENTE_API}/empresa/${selectedEmpresaId}`);
+      const clientesRes = await authFetch(`${CLIENTE_API}/${selectedEmpresaId}/clientes`);
       const clientesJson = (await clientesRes.json()) as ApiResponse<ClienteApiResponse[]>;
       // Mapear snake_case a camelCase como en Clientes.tsx
       const mappedClientes = (clientesJson.data ?? []).map(mapCliente);
       setClientes(mappedClientes);
 
       // Cargar items (servicios/productos)
-      const itemsRes = await authFetch(`${ITEM_API}/empresa/${selectedEmpresaId}`);
+      const itemsRes = await authFetch(`${ITEM_API}/${selectedEmpresaId}/items`);
       const itemsJson = (await itemsRes.json()) as ApiResponse<ServicioFactura[]>;
       setServicios(itemsJson.data ?? []);
     } catch (err) {
@@ -110,7 +110,7 @@ export default function Facturas() {
   const handleDelete = async (f: FacturaResponse) => {
     if (!window.confirm(`¿Estás seguro de que deseas eliminar la factura ${f.numero}?`)) return;
     try {
-      const res = await authFetch(`${FACTURA_API}/${f.id}?empresaId=${selectedEmpresaId}`, { method: 'DELETE' });
+      const res = await authFetch(`${FACTURA_API}/${selectedEmpresaId}/facturas/${f.id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Error al eliminar');
       void fetchData();
     } catch (err) {

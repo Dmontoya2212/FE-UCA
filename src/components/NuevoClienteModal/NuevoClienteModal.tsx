@@ -27,7 +27,7 @@ type NuevoClienteForm = {
   telefono: string;
 };
 
-const API_BASE = apiUrl('/api/v1/facturacion/cliente');
+const API_BASE = apiUrl('/api/v1/empresas');
 
 const INITIAL_FORM: NuevoClienteForm = {
   nombre: '',
@@ -81,7 +81,7 @@ const NuevoClienteModal = ({ isOpen, setIsOpen, onCreated }: NuevoClieneteModalP
 
     try {
       setSaving(true);
-      const res = await authFetch(API_BASE, {
+      const res = await authFetch(`${API_BASE}/${selectedEmpresaId}/clientes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

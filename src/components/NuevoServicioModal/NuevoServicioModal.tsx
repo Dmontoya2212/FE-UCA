@@ -33,9 +33,7 @@ const categorias = [
   { value: 'OTRO', label: 'Otro' },
 ];
 
-const API_BASE = apiUrl('/api/v1/facturacion/item');
-const IVA_API = apiUrl('/api/v1/facturacion/iva/empresa');
-const IVA_CREATE_API = apiUrl('/api/v1/facturacion/iva');
+const API_BASE = apiUrl('/api/v1/empresas');
 
 const INITIAL_FORM: NuevoServicioForm = {
   nombre: '',
@@ -56,13 +54,13 @@ const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModal
     if (selectedEmpresaId) {
       const loadIvas = async () => {
         try {
-          let res = await authFetch(`${IVA_API}/${selectedEmpresaId}`);
+          let res = await authFetch(`${API_BASE}/${selectedEmpresaId}/iva`);
           let j = await res.json();
           let list = j.data ?? [];
 
           // Si la empresa no tiene IVAs configurados, "quemamos" o creamos el 13% por defecto automáticamente.
           if (list.length === 0) {
-            await authFetch(IVA_CREATE_API, {
+            await authFetch(`${API_BASE}/${selectedEmpresaId}/iva`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -72,7 +70,7 @@ const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModal
               })
             });
             // Recargar la lista después de crearlo
-            res = await authFetch(`${IVA_API}/${selectedEmpresaId}`);
+            res = await authFetch(`${API_BASE}/${selectedEmpresaId}/iva`);
             j = await res.json();
             list = j.data ?? [];
           }
@@ -143,7 +141,7 @@ const NuevoServicioModal = ({ isOpen, setIsOpen, onCreated }: NuevoServicioModal
 
     try {
       setSaving(true);
-      const res = await authFetch(API_BASE, {
+      const res = await authFetch(`${API_BASE}/${selectedEmpresaId}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

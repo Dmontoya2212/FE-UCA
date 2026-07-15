@@ -8,7 +8,7 @@ import { useEmpresa } from '@context/useEmpresa.ts';
 import { apiUrl } from '@/config/api';
 import './Clientes.css';
 
-const API_BASE = apiUrl('/api/v1/facturacion/cliente');
+const API_BASE = apiUrl('/api/v1/empresas');
 
 type ApiResponse<T> = {
   data?: T;
@@ -54,7 +54,7 @@ export default function Clientes() {
     
     try {
       setLoading(true);
-      const res = await authFetch(`${API_BASE}/empresa/${selectedEmpresaId}`);
+      const res = await authFetch(`${API_BASE}/${selectedEmpresaId}/clientes`);
       const json = (await res.json()) as ApiResponse<ClienteApiResponse[]>;
       const mapped = (json.data ?? []).map(mapCliente);
       setClientes(mapped);

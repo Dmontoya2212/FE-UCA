@@ -56,7 +56,7 @@ const tipoDteOptions = [
   { value: '14', label: '14 - Sujeto Excluido (FSE)' },
 ];
 
-const API_BASE = apiUrl('/api/v1/facturacion/factura');
+const API_BASE = apiUrl('/api/v1/empresas');
 
 const lineaVacia = (): FacturaLinea => ({
   itemId: '',
@@ -233,13 +233,13 @@ export default function NuevaFacturaModal({
       
       let res;
       if (isEditMode) {
-        res = await authFetch(`${API_BASE}/${initialData.id}?empresaId=${selectedEmpresaId}`, {
+        res = await authFetch(`${API_BASE}/${selectedEmpresaId}/facturas/${initialData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
       } else {
-        res = await authFetch(API_BASE, {
+        res = await authFetch(`${API_BASE}/${selectedEmpresaId}/facturas`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
